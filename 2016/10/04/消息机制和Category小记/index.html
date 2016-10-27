@@ -64,7 +64,7 @@
 <meta property="og:site_name" content="Something What I Can Do">
 <meta property="og:description" content="在学习OC到一定阶段的时候，大部分都会接触到OC的底层机制。然后就会碰到Runtime、RunLoop这些名词。我自己在学习的过程中，第一次是通过一个“神奇的视频”开始，随后一段时间，就看到了不计其数的博客开始记录自己的Runtime学习之旅。我以前一直觉得，别人写过了的东西其实都没有必要再写了。不过最近反思，这些东西更多的时候是自己学习过程的记录，因为了解了知识点之后，并不一定能完整的诉诸文字或">
 <meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/runtime_classes.png">
-<meta property="og:updated_time" content="2016-10-27T09:03:02.000Z">
+<meta property="og:updated_time" content="2016-10-27T09:22:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="消息机制和Category小记">
 <meta name="twitter:description" content="在学习OC到一定阶段的时候，大部分都会接触到OC的底层机制。然后就会碰到Runtime、RunLoop这些名词。我自己在学习的过程中，第一次是通过一个“神奇的视频”开始，随后一段时间，就看到了不计其数的博客开始记录自己的Runtime学习之旅。我以前一直觉得，别人写过了的东西其实都没有必要再写了。不过最近反思，这些东西更多的时候是自己学习过程的记录，因为了解了知识点之后，并不一定能完整的诉诸文字或">
@@ -288,8 +288,7 @@
 <p>在<br><code>void _class_resolveInstanceMethod</code>方法里，就会找到这个缓存的方法，并重新调用一次objc_msgSend,然后出发消息转发流程。</p>
 <p>也就是在这一步添加的方法，会被缓存起来，下次发送这个SEl的时候都不会触发这个转发步骤了，直接在缓存中就找到了对应的实现。所以在这一步处理消息转发的最好的。<br>最终触发的方法是 <code>id _objc_msgForward(id self, SEL _cmd,...)</code>。接下来就是完整的消息转发流程。 这个方法的源码是汇编写的，全局搜索<code>_objc_msgForward(</code>则可以找到。</p>
 <p>之后就是给你一次机会转发给另外一个对象，不过以这样的方式处理，方法名，参数信息啥的都不能改变，和resolve方式的效果是一样的，而且还不如之前的处理方式（前一步有缓存）。如果这步返回nil，那么接下来就是我们常见的<code>方法签名+invocation调用</code>的完整转发方式。</p>
-<p>####为什么Category中不能添加属性</p>
-<p>其实这个问题是Category的加载问题。在美团的“<a href="http://tech.meituan.com/DiveIntoCategory.html" target="_blank" rel="external">深入理解Objective-C：Category</a>“中对Category进行了毫分缕析，讲的非常明白，看完之后必定会受益良多。对上述问题也有提及</p>
+<h4 id="u4E3A_u4EC0_u4E48Category_u4E2D_u4E0D_u80FD_u6DFB_u52A0_u5C5E_u6027"><a href="#u4E3A_u4EC0_u4E48Category_u4E2D_u4E0D_u80FD_u6DFB_u52A0_u5C5E_u6027" class="headerlink" title="为什么Category中不能添加属性"></a>为什么Category中不能添加属性</h4><p>其实这个问题是Category的加载问题。在美团的“<a href="http://tech.meituan.com/DiveIntoCategory.html" target="_blank" rel="external">深入理解Objective-C：Category</a>“中对Category进行了毫分缕析，讲的非常明白，看完之后必定会受益良多。对上述问题也有提及</p>
 <blockquote>
 <p>但是category则完全不一样，它是在运行期决议的。<br>就category和extension的区别来看，我们可以推导出一个明显的事实，extension可以添加实例变量，而Category是无法添加实例变量的（因为在运行期，对象的内存布局已经确定，如果添加实例变量就会破坏类的内部布局，这对编译型语言来说是灾难性的）。</p>
 </blockquote>
@@ -450,7 +449,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#u6D88_u606F_u673A_u5236"><span class="nav-number">1.</span> <span class="nav-text">消息机制</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#u6D88_u606F_u673A_u5236"><span class="nav-number">1.</span> <span class="nav-text">消息机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#u4E3A_u4EC0_u4E48Category_u4E2D_u4E0D_u80FD_u6DFB_u52A0_u5C5E_u6027"><span class="nav-number">2.</span> <span class="nav-text">为什么Category中不能添加属性</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
