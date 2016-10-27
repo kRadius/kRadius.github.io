@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="iOS,设计杂谈," />
 
 
 
@@ -57,17 +57,17 @@
 
 
 
-<meta name="description" content="消息机制和Category小记在学习OC到一定阶段的时候，大部分都会接触到OC的底层机制。然后就会碰到Runtime、RunLoop这些名词。我自己在学习的过程中，第一次是通过一个“神奇的视频”开始，随后一段时间，就看到了不计其数的博客开始记录自己的Runtime学习之旅。我以前一直觉得，别人写过了的东西其实都没有必要再写了。不过最近反思，这些东西更多的时候是自己学习过程的记录，因为了解了知识点之">
+<meta name="description" content="在学习OC到一定阶段的时候，大部分都会接触到OC的底层机制。然后就会碰到Runtime、RunLoop这些名词。我自己在学习的过程中，第一次是通过一个“神奇的视频”开始，随后一段时间，就看到了不计其数的博客开始记录自己的Runtime学习之旅。我以前一直觉得，别人写过了的东西其实都没有必要再写了。不过最近反思，这些东西更多的时候是自己学习过程的记录，因为了解了知识点之后，并不一定能完整的诉诸文字或">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Something What I Can Do">
-<meta property="og:url" content="http://yoursite.com/2016/10/27/消息机制和Category小记/index.html">
+<meta property="og:title" content="被忽视的iOS架构模式-MVP">
+<meta property="og:url" content="http://yoursite.com/2016/10/04/消息机制和Category小记/index.html">
 <meta property="og:site_name" content="Something What I Can Do">
-<meta property="og:description" content="消息机制和Category小记在学习OC到一定阶段的时候，大部分都会接触到OC的底层机制。然后就会碰到Runtime、RunLoop这些名词。我自己在学习的过程中，第一次是通过一个“神奇的视频”开始，随后一段时间，就看到了不计其数的博客开始记录自己的Runtime学习之旅。我以前一直觉得，别人写过了的东西其实都没有必要再写了。不过最近反思，这些东西更多的时候是自己学习过程的记录，因为了解了知识点之">
+<meta property="og:description" content="在学习OC到一定阶段的时候，大部分都会接触到OC的底层机制。然后就会碰到Runtime、RunLoop这些名词。我自己在学习的过程中，第一次是通过一个“神奇的视频”开始，随后一段时间，就看到了不计其数的博客开始记录自己的Runtime学习之旅。我以前一直觉得，别人写过了的东西其实都没有必要再写了。不过最近反思，这些东西更多的时候是自己学习过程的记录，因为了解了知识点之后，并不一定能完整的诉诸文字或">
 <meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/runtime_classes.png">
-<meta property="og:updated_time" content="2016-10-27T08:45:26.000Z">
+<meta property="og:updated_time" content="2016-10-27T08:58:04.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Something What I Can Do">
-<meta name="twitter:description" content="消息机制和Category小记在学习OC到一定阶段的时候，大部分都会接触到OC的底层机制。然后就会碰到Runtime、RunLoop这些名词。我自己在学习的过程中，第一次是通过一个“神奇的视频”开始，随后一段时间，就看到了不计其数的博客开始记录自己的Runtime学习之旅。我以前一直觉得，别人写过了的东西其实都没有必要再写了。不过最近反思，这些东西更多的时候是自己学习过程的记录，因为了解了知识点之">
+<meta name="twitter:title" content="被忽视的iOS架构模式-MVP">
+<meta name="twitter:description" content="在学习OC到一定阶段的时候，大部分都会接触到OC的底层机制。然后就会碰到Runtime、RunLoop这些名词。我自己在学习的过程中，第一次是通过一个“神奇的视频”开始，随后一段时间，就看到了不计其数的博客开始记录自己的Runtime学习之旅。我以前一直觉得，别人写过了的东西其实都没有必要再写了。不过最近反思，这些东西更多的时候是自己学习过程的记录，因为了解了知识点之后，并不一定能完整的诉诸文字或">
 
 
 
@@ -85,7 +85,7 @@
   };
 </script>
 
-  <title>  | Something What I Can Do </title>
+  <title> 被忽视的iOS架构模式-MVP | Something What I Can Do </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -207,7 +207,7 @@
             
             
               
-                
+                被忽视的iOS架构模式-MVP
               
             
           </h1>
@@ -219,11 +219,30 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-10-27T16:46:10+08:00" content="2016-10-27">
-              2016-10-27
+            <time itemprop="dateCreated" datetime="2016-10-04T20:42:30+08:00" content="2016-10-04">
+              2016-10-04
             </time>
           </span>
 
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/设计杂谈/" itemprop="url" rel="index">
+                    <span itemprop="name">设计杂谈</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
           
 
           
@@ -246,7 +265,7 @@
       
 
       
-        <h2 id="u6D88_u606F_u673A_u5236_u548CCategory_u5C0F_u8BB0"><a href="#u6D88_u606F_u673A_u5236_u548CCategory_u5C0F_u8BB0" class="headerlink" title="消息机制和Category小记"></a>消息机制和Category小记</h2><p>在学习OC到一定阶段的时候，大部分都会接触到OC的底层机制。然后就会碰到Runtime、RunLoop这些名词。我自己在学习的过程中，第一次是通过一个“神奇的视频”开始，随后一段时间，就看到了不计其数的博客开始记录自己的Runtime学习之旅。我以前一直觉得，别人写过了的东西其实都没有必要再写了。不过最近反思，这些东西更多的时候是自己学习过程的记录，因为了解了知识点之后，并不一定能完整的诉诸文字或者使人昭昭。<code>I see and I forget, I hear and I remember, I do and I understand！</code></p>
+        <p>在学习OC到一定阶段的时候，大部分都会接触到OC的底层机制。然后就会碰到Runtime、RunLoop这些名词。我自己在学习的过程中，第一次是通过一个“神奇的视频”开始，随后一段时间，就看到了不计其数的博客开始记录自己的Runtime学习之旅。我以前一直觉得，别人写过了的东西其实都没有必要再写了。不过最近反思，这些东西更多的时候是自己学习过程的记录，因为了解了知识点之后，并不一定能完整的诉诸文字或者使人昭昭。<code>I see and I forget, I hear and I remember, I do and I understand！</code></p>
 <h4 id="u6D88_u606F_u673A_u5236"><a href="#u6D88_u606F_u673A_u5236" class="headerlink" title="消息机制"></a>消息机制</h4><p>消息发送机制是runtime的重要组成部分。明白了一个消息的完整发送过程，对oc对象的本质以及runtime肯定会有一个宏观的了解。</p>
 <p>首先是“对象”，OC的对象其实就是一个含有isa指针的结构体。包括<code>实例对象(instance)</code>，<code>类对象(class)</code>，<code>元类对象(meta class)</code>。实例对象包含实例变量、类对象包含实例方法（’ - ‘号），元类对象包含类方法。当然，这些对象中不仅仅包含这些东西。但是对于理解消息机制，知道这些大概的差不多了，以下是简单的图解。<br><img src="http://7xpoeq.com1.z0.glb.clouddn.com/runtime_classes.png" alt="class"></p>
 <p>所以在对一个对象发消息的时候，如果是向实例对象发送消息，则是在他的类对象中找([aFoo bar])；向类对象发送消息则是在元类中找([Foo bar])。</p>
@@ -293,6 +312,14 @@
     </div>
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag">#iOS</a>
+          
+            <a href="/tags/设计杂谈/" rel="tag">#设计杂谈</a>
+          
+        </div>
       
 
       
@@ -423,7 +450,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#u6D88_u606F_u673A_u5236_u548CCategory_u5C0F_u8BB0"><span class="nav-number">1.</span> <span class="nav-text">消息机制和Category小记</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#u6D88_u606F_u673A_u5236"><span class="nav-number">1.0.1.</span> <span class="nav-text">消息机制</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#u6D88_u606F_u673A_u5236"><span class="nav-number">1.</span> <span class="nav-text">消息机制</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
