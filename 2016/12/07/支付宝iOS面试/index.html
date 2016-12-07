@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="iOS,设计杂谈," />
+  <meta name="keywords" content="面试," />
 
 
 
@@ -57,21 +57,22 @@
 
 
 
-<meta name="description" content="前一段时间，业界关于iOS架构模式的讨论可谓是如火如荼。从讨伐人人得而诛之的MVC开始，MVCS、MVVM、MVP等设计的思想，普天盖地的出现在iOSer的视野中。由于RAC的出现，MVVM这个被大家讨论的最多的词汇，更是如日中天。从基础的MVVM教程开始（iOS 程序猿的，英文好的朋友可以看看Ray上的Toturial），乃至到批判的文章（唐巧的《被神话的MVVM》），一应俱全。但是关于其他的M">
+<meta name="description" content="上来先问，项目结构是怎么样的，这个我事先画过一遍，大概把项目的分层说了一遍
+然后引申出一系列的问题
+####第一个是埋点，项目中的埋点是怎么设计实现？一般是实时push。因为并不是要统计所有的行为。如果要统计所有的行为，有没有考虑放到本地，因为可能网络状况不好，导致埋点统计失败。然后是如果放到本地，应该怎么去设计=&amp;gt;数据库，因为量可能会很大。那么如果日志量很大，本地如果有20w条日志记录，应">
 <meta property="og:type" content="article">
-<meta property="og:title" content="被忽视的iOS架构模式-MVP">
-<meta property="og:url" content="http://yoursite.com/2016/02/04/被忽视的iOS架构模式-MVP/index.html">
+<meta property="og:title" content="支付宝iOS面试">
+<meta property="og:url" content="http://yoursite.com/2016/12/07/支付宝iOS面试/index.html">
 <meta property="og:site_name" content="StoryBoard">
-<meta property="og:description" content="前一段时间，业界关于iOS架构模式的讨论可谓是如火如荼。从讨伐人人得而诛之的MVC开始，MVCS、MVVM、MVP等设计的思想，普天盖地的出现在iOSer的视野中。由于RAC的出现，MVVM这个被大家讨论的最多的词汇，更是如日中天。从基础的MVVM教程开始（iOS 程序猿的，英文好的朋友可以看看Ray上的Toturial），乃至到批判的文章（唐巧的《被神话的MVVM》），一应俱全。但是关于其他的M">
-<meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/MVP%E7%AE%80%E6%84%8F.jpg">
-<meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/MVP_1_1.jpg">
-<meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/MVP_2.jpg">
-<meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/MVP_4.jpg">
-<meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/MVP_3.jpg">
-<meta property="og:updated_time" content="2016-02-04T13:54:10.000Z">
+<meta property="og:description" content="上来先问，项目结构是怎么样的，这个我事先画过一遍，大概把项目的分层说了一遍
+然后引申出一系列的问题
+####第一个是埋点，项目中的埋点是怎么设计实现？一般是实时push。因为并不是要统计所有的行为。如果要统计所有的行为，有没有考虑放到本地，因为可能网络状况不好，导致埋点统计失败。然后是如果放到本地，应该怎么去设计=&amp;gt;数据库，因为量可能会很大。那么如果日志量很大，本地如果有20w条日志记录，应">
+<meta property="og:updated_time" content="2016-12-07T12:33:16.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="被忽视的iOS架构模式-MVP">
-<meta name="twitter:description" content="前一段时间，业界关于iOS架构模式的讨论可谓是如火如荼。从讨伐人人得而诛之的MVC开始，MVCS、MVVM、MVP等设计的思想，普天盖地的出现在iOSer的视野中。由于RAC的出现，MVVM这个被大家讨论的最多的词汇，更是如日中天。从基础的MVVM教程开始（iOS 程序猿的，英文好的朋友可以看看Ray上的Toturial），乃至到批判的文章（唐巧的《被神话的MVVM》），一应俱全。但是关于其他的M">
+<meta name="twitter:title" content="支付宝iOS面试">
+<meta name="twitter:description" content="上来先问，项目结构是怎么样的，这个我事先画过一遍，大概把项目的分层说了一遍
+然后引申出一系列的问题
+####第一个是埋点，项目中的埋点是怎么设计实现？一般是实时push。因为并不是要统计所有的行为。如果要统计所有的行为，有没有考虑放到本地，因为可能网络状况不好，导致埋点统计失败。然后是如果放到本地，应该怎么去设计=&amp;gt;数据库，因为量可能会很大。那么如果日志量很大，本地如果有20w条日志记录，应">
 
 
 
@@ -89,7 +90,7 @@
   };
 </script>
 
-  <title> 被忽视的iOS架构模式-MVP | StoryBoard </title>
+  <title> 支付宝iOS面试 | StoryBoard </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -211,7 +212,7 @@
             
             
               
-                被忽视的iOS架构模式-MVP
+                支付宝iOS面试
               
             
           </h1>
@@ -223,8 +224,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-02-04T21:35:50+08:00" content="2016-02-04">
-              2016-02-04
+            <time itemprop="dateCreated" datetime="2016-12-07T20:12:29+08:00" content="2016-12-07">
+              2016-12-07
             </time>
           </span>
 
@@ -237,8 +238,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/设计杂谈/" itemprop="url" rel="index">
-                    <span itemprop="name">设计杂谈</span>
+                  <a href="/categories/面试/" itemprop="url" rel="index">
+                    <span itemprop="name">面试</span>
                   </a>
                 </span>
 
@@ -269,20 +270,22 @@
       
 
       
-        <p>前一段时间，业界关于iOS架构模式的讨论可谓是如火如荼。从讨伐人人得而诛之的MVC开始，MVCS、MVVM、MVP等设计的思想，普天盖地的出现在iOSer的视野中。由于RAC的出现，MVVM这个被大家讨论的最多的词汇，更是如日中天。从基础的MVVM教程开始（iOS 程序猿的，英文好的朋友可以看看Ray上的Toturial），乃至到批判的文章（唐巧的《被神话的MVVM》），一应俱全。但是关于其他的MVP此类的，大家都是用来做为比较的例子，一笔带过。在我的阅读的范围之内，好像没有见过有谁去详细的解释了一下，至少侧重点不在于此。鉴于此，发表一下个人对于MVP的看法，并且附上相应的Demo。</p>
-<p>我们知道，上述所有的设计模式的目的，都是为了解放负担过重的Controller。超过了500行的Controller，基本上就要靠搜索来定位代码了，于己于人，都非常不友好。<br>MVP，不是Most Valuable Player，是从MVC思想中，淡化了Controller的概念，把Controller的大部分业务逻辑，转交到Presenter中，弱化了Controller和Model、View之间的强依赖关系。Presenter可以剥离Controller中<code>View的事件处理</code>，同时也可以<code>负责与Model</code>的交互，Controller自身的一些比如Controller之间的跳转，还是自身负责。这儿的Model，我们可以理解成一个Manager，一个操作数据层（网络or本地），不仅仅是一个继承自NSObject的对象。相比于MVVM，缺少了双向绑定的机制，好处是不会有那么高的耦合，提高了自身的可扩展性和灵活性。</p>
-<p><strong>MVP简意</strong><br><img src="http://7xpoeq.com1.z0.glb.clouddn.com/MVP%E7%AE%80%E6%84%8F.jpg" alt="MVP简意"></p>
-<p>其中还有好多的数据回调、传递。</p>
-<p>我看完很多文章之后仅仅有了一个概念，“哦，原来是这么回事”，然后想写一个Demo实践一下，感觉又远远不止如此。不知道有多人是和我这样。所以，我参照各方资料写了一个我理解的中的<a href="https://github.com/kRadius/MVPDemo" target="_blank" rel="external">示例</a>。实现从网络获取json数据，然后点击进入详细界面这么一个需求。</p>
-<p><strong>ListViewController 的结构</strong><br><img src="http://7xpoeq.com1.z0.glb.clouddn.com/MVP_1_1.jpg" alt="ListViewController的结构"></p>
-<p>可以看到，VC直接持有了Presenter和DataManager（放下手中的西瓜刀，这DataManager其实是给Presneter用的）。还有一个DataSource是用来分离TableView的代理方法，这个给ViewContrller减负的技巧，objc.io开篇就讲了，有兴趣的可以回去翻阅。UIActivityIndicatorView就是象征VC可能持有的一系列变量（诸如刷洗按钮等）。ListViewProtocol是把ViewController里边的一些处理定义成协议，交给Presenter。做这些所有的目的，都是为了给VC瘦身，合理的减负。</p>
-<p><code>ListViewProtocol</code>中，把VC中可以或者需要分离的逻辑，定义成协议。<br><img src="http://7xpoeq.com1.z0.glb.clouddn.com/MVP_2.jpg" alt="ListViewProtocol"><br>之前我们看到，其实是ListViewController实现了这个协议，只不过这些协议方法的调用地方是在Presenter里。比如说，在请求开始之前，-(void)startLoading。获取到了数据之后，就调用-(void)receivedListData:(NSArray *)array，然后刷新tableView之类的事情就可以做了。因为有些事情还是适合在VC里边自个儿做。</p>
-<p>DataManager在这需求里边就需要有一个获取数据的方法，用的是block回调。<br><img src="http://7xpoeq.com1.z0.glb.clouddn.com/MVP_4.jpg" alt="DataManager"><br>另外那个DataArray可以让VC去持有。</p>
-<p>最关键的<code>Presenter</code><br><img src="http://7xpoeq.com1.z0.glb.clouddn.com/MVP_3.jpg" alt="Presenter实现"><br>在MVP里边，P就是核心的调度者。干的就是以前VC的活。前面提到，DataManager其实是最主要是给Presenter用的。Prensenter需要有个可以初始化这俩变量的地方，并且发起数据请求。Demo就是在config这个方法里做的。有一点需要注意的是，他们之间的<code>循环引用问题</code>，该用weak的地方就用weak。这里解释一下为什么定义那么多协议。我觉得协议里的方法可以理解成需求，然后甭管你是谁，只要能够实现这些需求，就能够成为Presenter，成为Manager。这样不知道算不算是一种解耦的方式。</p>
-<p>Demo里的核心部分就是这些了，详情页面的和这个差不多，看到了工程里边的东西，一下就会明白的。</p>
-<p>总的来说，MVP提供了良好的灵活性和扩展性，对于写单元测试的来说，也是较为可控。不过，于我们所见，代码量多了不少，另外也没有那View和Model的绑定机制。还是那句话，没有最好的设计模式，合适自己需求的才是最好的。</p>
-<p>PS：Demo里的数据来自豆瓣，偶尔会有福利。玩的开心 :D</p>
-<p>请尊重原创,保持原链接 :D</p>
+        <p>上来先问，项目结构是怎么样的，这个我事先画过一遍，大概把项目的分层说了一遍</p>
+<p>然后引申出一系列的问题</p>
+<p>####第一个是埋点，项目中的埋点是怎么设计实现？<br>一般是实时push。因为并不是要统计所有的行为。如果要统计所有的行为，有没有考虑放到本地，因为可能网络状况不好，导致埋点统计失败。然后是如果放到本地，应该怎么去设计<br>=&gt;数据库，因为量可能会很大。<br>那么如果日志量很大，本地如果有20w条日志记录，应该怎么push到服务端?怎么去取本地的数据？怎么发送到服务端？如果中途失败了、或者Crash了应该如何处理？</p>
+<p>####第二个，先是问我们项目中的数据持久层都是怎么做的？然后数据库是怎么保证事务的原子性？在commit之前，都在哪儿干了什么事情？多线程访问数据库怎么保证安全？<br>这方面没深究过，我说，我猜大概是有个类似虚表的东西，然后在commit之前的事情都是在这儿做的，如果操作成功了，再去操作实际的数据表，失败之后就回滚操作</p>
+<p>回来发现，完全不是这样的:D。原子性是通过Redo/Undo机制的来实现的。比如删除会生成insert，插入会生成delete这些相反的UndoLog，在事务回滚的时候，去执行这些log</p>
+<p>具体的看这个<a href="https://www.zhihu.com/question/30272728/answer/95908054" target="_blank" rel="external">https://www.zhihu.com/question/30272728/answer/95908054</a></p>
+<p>同步队列，我们的数据库访问层就是用一个SearialQueue去管理所有的操作。</p>
+<p>####第三个， Class A 的 A方法要调用 Class B的B方法，B要调用A的，怎么做到完全解耦？<br>通知啊（不过我一激动居然没想到！！！我猜如果按照这个方向问下去，会涉及到跨线程发通知的事儿）<br>我想的另外方案，加一个M层，然后也不让间接引用（就是M里面import B，创建b的实例也不让）,那么就消息转发吧，可以动态resolveInstanceMethod</p>
+<p>####第四个， CoreText，富文本的导致的页面卡顿应该如何去解决？还有离屏渲染的问题？<br>这个答了个大概，把绘制的任务放在异步线程里，把图层绘制成一个bitmap，然后将bitmap作为layer的backingStore(也就是leyer的contents属性),直接显示出来，还谈到了AsyncDispalyKit的原理</p>
+<p>答了离屏渲染的原理，UI的绘制本来是CPU完成的，如果设置了圆角和mask，会导致渲染这个bitmap的时候，需要开辟额外的内存去绘制radius和mask。还有我说在使用系统提供的layer.shouldRaster之后导致图片会失真，变得模糊不清（也问了为什么会这样），然后采用了重新绘制image的方式。<br>谈到怎么去避免离屏渲染，尽量不要设置半透明的层叠视图，因为GPU需要组合这些layerTree，并且要额外的blending这些半透明的视图。</p>
+<p>####第五个，线程的安全应该怎么保证？<br>加锁，NSLock、NSRecursiveLock等，还有GCD的semaphore信号量机制之类的。</p>
+<p>####第六个，微信小程序的实现原理是啥？为什么要这么做？（估计是看看我没有关注这些事儿）<br>我说大概是在类似Html的基础上又封装实现了一套自己的东西，然后他去帮我们调用原生的东西。因为我当时参加的一线下活动里看到过，微信小程序可以在web页面里调试。</p>
+<p>至于为什么，我猜是为了维护自己的微信生态啥的，也更好的和微信本身交互</p>
+<p>####第七个，怎么去优化流量的的问题，或者电量的问题?<br>网络缓存，然后是缓存时效性问题。然后就是说道ETag来标志缓存是否要更新<br>电量的话，只能用intrument去分析app里那些地方占用的大量的内存，或者耗时的任务，动画之类的。</p>
+<p>####第八个，对MVVM怎么看？有啥缺点？<br>我说这个主要就是View层和Model层的双向绑定问题。RAC就是使双向绑定的事情变得更简单了。缺点的话，我说因为数据绑定可能会让bug更难调试吧，而且数据绑定也比较复杂，耗费内存。RAC的问题也是，出了问题比较难调试以及内存问题。</p>
+<p>####结尾<br>其实他们问的是多数都是大平台的APP里，通常都需要去解决的一些难点，以及你怎么去应对这些事。除了这些问题，还有一些零零散散的，比如微信的聊天记录表，要你去设计应该怎么去设计，微信的聊天应该怎么去实现啥的。今天也是明白了自己的差距在哪儿——视野太狭窄了。很多原理性的东西都需要去钻研，很多技术难点也需要去攻克。共勉吧！</p>
 
       
     </div>
@@ -297,9 +300,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/iOS/" rel="tag">#iOS</a>
-          
-            <a href="/tags/设计杂谈/" rel="tag">#设计杂谈</a>
+            <a href="/tags/面试/" rel="tag">#面试</a>
           
         </div>
       
@@ -308,17 +309,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/12/30/something-about-hexo/" rel="next" title="搭建hexo躺过的坑">
-                <i class="fa fa-chevron-left"></i> 搭建hexo躺过的坑
+              <a href="/2016/10/04/消息机制和Category小记/" rel="next" title="消息机制和Category小记">
+                <i class="fa fa-chevron-left"></i> 消息机制和Category小记
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/05/25/一些关于ChildViewController的问题/" rel="prev" title="关于ChildViewController">
-                关于ChildViewController <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
