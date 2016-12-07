@@ -57,22 +57,19 @@
 
 
 
-<meta name="description" content="上来先问，项目结构是怎么样的，这个我事先画过一遍，大概把项目的分层说了一遍
-然后引申出一系列的问题
-####第一个是埋点，项目中的埋点是怎么设计实现？一般是实时push。因为并不是要统计所有的行为。如果要统计所有的行为，有没有考虑放到本地，因为可能网络状况不好，导致埋点统计失败。然后是如果放到本地，应该怎么去设计=&amp;gt;数据库，因为量可能会很大。那么如果日志量很大，本地如果有20w条日志记录，应">
+<meta name="description" content="上来先问，项目结构是怎么样的，这个我事先画过一遍，大概把项目的分层说了一遍然后引申出一系列的问题
+第一个是埋点，项目中的埋点是怎么设计实现？一般是实时push。因为并不是要统计所有的行为。如果要统计所有的行为，有没有考虑放到本地，因为可能网络状况不好，导致埋点统计失败。然后是如果放到本地，应该怎么去设计=&amp;gt;数据库，因为量可能会很大。那么如果日志量很大，本地如果有20w条日志记录，应该怎么pu">
 <meta property="og:type" content="article">
 <meta property="og:title" content="支付宝iOS面试">
 <meta property="og:url" content="http://yoursite.com/2016/12/07/支付宝iOS面试/index.html">
 <meta property="og:site_name" content="StoryBoard">
-<meta property="og:description" content="上来先问，项目结构是怎么样的，这个我事先画过一遍，大概把项目的分层说了一遍
-然后引申出一系列的问题
-####第一个是埋点，项目中的埋点是怎么设计实现？一般是实时push。因为并不是要统计所有的行为。如果要统计所有的行为，有没有考虑放到本地，因为可能网络状况不好，导致埋点统计失败。然后是如果放到本地，应该怎么去设计=&amp;gt;数据库，因为量可能会很大。那么如果日志量很大，本地如果有20w条日志记录，应">
-<meta property="og:updated_time" content="2016-12-07T12:33:16.000Z">
+<meta property="og:description" content="上来先问，项目结构是怎么样的，这个我事先画过一遍，大概把项目的分层说了一遍然后引申出一系列的问题
+第一个是埋点，项目中的埋点是怎么设计实现？一般是实时push。因为并不是要统计所有的行为。如果要统计所有的行为，有没有考虑放到本地，因为可能网络状况不好，导致埋点统计失败。然后是如果放到本地，应该怎么去设计=&amp;gt;数据库，因为量可能会很大。那么如果日志量很大，本地如果有20w条日志记录，应该怎么pu">
+<meta property="og:updated_time" content="2016-12-07T12:35:59.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="支付宝iOS面试">
-<meta name="twitter:description" content="上来先问，项目结构是怎么样的，这个我事先画过一遍，大概把项目的分层说了一遍
-然后引申出一系列的问题
-####第一个是埋点，项目中的埋点是怎么设计实现？一般是实时push。因为并不是要统计所有的行为。如果要统计所有的行为，有没有考虑放到本地，因为可能网络状况不好，导致埋点统计失败。然后是如果放到本地，应该怎么去设计=&amp;gt;数据库，因为量可能会很大。那么如果日志量很大，本地如果有20w条日志记录，应">
+<meta name="twitter:description" content="上来先问，项目结构是怎么样的，这个我事先画过一遍，大概把项目的分层说了一遍然后引申出一系列的问题
+第一个是埋点，项目中的埋点是怎么设计实现？一般是实时push。因为并不是要统计所有的行为。如果要统计所有的行为，有没有考虑放到本地，因为可能网络状况不好，导致埋点统计失败。然后是如果放到本地，应该怎么去设计=&amp;gt;数据库，因为量可能会很大。那么如果日志量很大，本地如果有20w条日志记录，应该怎么pu">
 
 
 
@@ -270,22 +267,21 @@
       
 
       
-        <p>上来先问，项目结构是怎么样的，这个我事先画过一遍，大概把项目的分层说了一遍</p>
-<p>然后引申出一系列的问题</p>
-<p>####第一个是埋点，项目中的埋点是怎么设计实现？<br>一般是实时push。因为并不是要统计所有的行为。如果要统计所有的行为，有没有考虑放到本地，因为可能网络状况不好，导致埋点统计失败。然后是如果放到本地，应该怎么去设计<br>=&gt;数据库，因为量可能会很大。<br>那么如果日志量很大，本地如果有20w条日志记录，应该怎么push到服务端?怎么去取本地的数据？怎么发送到服务端？如果中途失败了、或者Crash了应该如何处理？</p>
-<p>####第二个，先是问我们项目中的数据持久层都是怎么做的？然后数据库是怎么保证事务的原子性？在commit之前，都在哪儿干了什么事情？多线程访问数据库怎么保证安全？<br>这方面没深究过，我说，我猜大概是有个类似虚表的东西，然后在commit之前的事情都是在这儿做的，如果操作成功了，再去操作实际的数据表，失败之后就回滚操作</p>
+        <p>上来先问，项目结构是怎么样的，这个我事先画过一遍，大概把项目的分层说了一遍<br>然后引申出一系列的问题</p>
+<h4 id="u7B2C_u4E00_u4E2A_u662F_u57CB_u70B9_uFF0C_u9879_u76EE_u4E2D_u7684_u57CB_u70B9_u662F_u600E_u4E48_u8BBE_u8BA1_u5B9E_u73B0_uFF1F"><a href="#u7B2C_u4E00_u4E2A_u662F_u57CB_u70B9_uFF0C_u9879_u76EE_u4E2D_u7684_u57CB_u70B9_u662F_u600E_u4E48_u8BBE_u8BA1_u5B9E_u73B0_uFF1F" class="headerlink" title="第一个是埋点，项目中的埋点是怎么设计实现？"></a>第一个是埋点，项目中的埋点是怎么设计实现？</h4><p>一般是实时push。因为并不是要统计所有的行为。如果要统计所有的行为，有没有考虑放到本地，因为可能网络状况不好，导致埋点统计失败。然后是如果放到本地，应该怎么去设计<br>=&gt;数据库，因为量可能会很大。<br>那么如果日志量很大，本地如果有20w条日志记录，应该怎么push到服务端?怎么去取本地的数据？怎么发送到服务端？如果中途失败了、或者Crash了应该如何处理？</p>
+<h4 id="u7B2C_u4E8C_u4E2A_uFF0C_u5148_u662F_u95EE_u6211_u4EEC_u9879_u76EE_u4E2D_u7684_u6570_u636E_u6301_u4E45_u5C42_u90FD_u662F_u600E_u4E48_u505A_u7684_uFF1F_u7136_u540E_u6570_u636E_u5E93_u662F_u600E_u4E48_u4FDD_u8BC1_u4E8B_u52A1_u7684_u539F_u5B50_u6027_uFF1F_u5728commit_u4E4B_u524D_uFF0C_u90FD_u5728_u54EA_u513F_u5E72_u4E86_u4EC0_u4E48_u4E8B_u60C5_uFF1F_u591A_u7EBF_u7A0B_u8BBF_u95EE_u6570_u636E_u5E93_u600E_u4E48_u4FDD_u8BC1_u5B89_u5168_uFF1F"><a href="#u7B2C_u4E8C_u4E2A_uFF0C_u5148_u662F_u95EE_u6211_u4EEC_u9879_u76EE_u4E2D_u7684_u6570_u636E_u6301_u4E45_u5C42_u90FD_u662F_u600E_u4E48_u505A_u7684_uFF1F_u7136_u540E_u6570_u636E_u5E93_u662F_u600E_u4E48_u4FDD_u8BC1_u4E8B_u52A1_u7684_u539F_u5B50_u6027_uFF1F_u5728commit_u4E4B_u524D_uFF0C_u90FD_u5728_u54EA_u513F_u5E72_u4E86_u4EC0_u4E48_u4E8B_u60C5_uFF1F_u591A_u7EBF_u7A0B_u8BBF_u95EE_u6570_u636E_u5E93_u600E_u4E48_u4FDD_u8BC1_u5B89_u5168_uFF1F" class="headerlink" title="第二个，先是问我们项目中的数据持久层都是怎么做的？然后数据库是怎么保证事务的原子性？在commit之前，都在哪儿干了什么事情？多线程访问数据库怎么保证安全？"></a>第二个，先是问我们项目中的数据持久层都是怎么做的？然后数据库是怎么保证事务的原子性？在commit之前，都在哪儿干了什么事情？多线程访问数据库怎么保证安全？</h4><p>这方面没深究过，我说，我猜大概是有个类似虚表的东西，然后在commit之前的事情都是在这儿做的，如果操作成功了，再去操作实际的数据表，失败之后就回滚操作</p>
 <p>回来发现，完全不是这样的:D。原子性是通过Redo/Undo机制的来实现的。比如删除会生成insert，插入会生成delete这些相反的UndoLog，在事务回滚的时候，去执行这些log</p>
 <p>具体的看这个<a href="https://www.zhihu.com/question/30272728/answer/95908054" target="_blank" rel="external">https://www.zhihu.com/question/30272728/answer/95908054</a></p>
 <p>同步队列，我们的数据库访问层就是用一个SearialQueue去管理所有的操作。</p>
-<p>####第三个， Class A 的 A方法要调用 Class B的B方法，B要调用A的，怎么做到完全解耦？<br>通知啊（不过我一激动居然没想到！！！我猜如果按照这个方向问下去，会涉及到跨线程发通知的事儿）<br>我想的另外方案，加一个M层，然后也不让间接引用（就是M里面import B，创建b的实例也不让）,那么就消息转发吧，可以动态resolveInstanceMethod</p>
-<p>####第四个， CoreText，富文本的导致的页面卡顿应该如何去解决？还有离屏渲染的问题？<br>这个答了个大概，把绘制的任务放在异步线程里，把图层绘制成一个bitmap，然后将bitmap作为layer的backingStore(也就是leyer的contents属性),直接显示出来，还谈到了AsyncDispalyKit的原理</p>
+<h4 id="u7B2C_u4E09_u4E2A_uFF0C_Class_A__u7684_A_u65B9_u6CD5_u8981_u8C03_u7528_Class_B_u7684B_u65B9_u6CD5_uFF0CB_u8981_u8C03_u7528A_u7684_uFF0C_u600E_u4E48_u505A_u5230_u5B8C_u5168_u89E3_u8026_uFF1F"><a href="#u7B2C_u4E09_u4E2A_uFF0C_Class_A__u7684_A_u65B9_u6CD5_u8981_u8C03_u7528_Class_B_u7684B_u65B9_u6CD5_uFF0CB_u8981_u8C03_u7528A_u7684_uFF0C_u600E_u4E48_u505A_u5230_u5B8C_u5168_u89E3_u8026_uFF1F" class="headerlink" title="第三个， Class A 的 A方法要调用 Class B的B方法，B要调用A的，怎么做到完全解耦？"></a>第三个， Class A 的 A方法要调用 Class B的B方法，B要调用A的，怎么做到完全解耦？</h4><p>通知啊（不过我一激动居然没想到！！！我猜如果按照这个方向问下去，会涉及到跨线程发通知的事儿）<br>我想的另外方案，加一个M层，然后也不让间接引用（就是M里面import B，创建b的实例也不让）,那么就消息转发吧，可以动态resolveInstanceMethod</p>
+<h4 id="u7B2C_u56DB_u4E2A_uFF0C_CoreText_uFF0C_u5BCC_u6587_u672C_u7684_u5BFC_u81F4_u7684_u9875_u9762_u5361_u987F_u5E94_u8BE5_u5982_u4F55_u53BB_u89E3_u51B3_uFF1F_u8FD8_u6709_u79BB_u5C4F_u6E32_u67D3_u7684_u95EE_u9898_uFF1F"><a href="#u7B2C_u56DB_u4E2A_uFF0C_CoreText_uFF0C_u5BCC_u6587_u672C_u7684_u5BFC_u81F4_u7684_u9875_u9762_u5361_u987F_u5E94_u8BE5_u5982_u4F55_u53BB_u89E3_u51B3_uFF1F_u8FD8_u6709_u79BB_u5C4F_u6E32_u67D3_u7684_u95EE_u9898_uFF1F" class="headerlink" title="第四个， CoreText，富文本的导致的页面卡顿应该如何去解决？还有离屏渲染的问题？"></a>第四个， CoreText，富文本的导致的页面卡顿应该如何去解决？还有离屏渲染的问题？</h4><p>这个答了个大概，把绘制的任务放在异步线程里，把图层绘制成一个bitmap，然后将bitmap作为layer的backingStore(也就是leyer的contents属性),直接显示出来，还谈到了AsyncDispalyKit的原理</p>
 <p>答了离屏渲染的原理，UI的绘制本来是CPU完成的，如果设置了圆角和mask，会导致渲染这个bitmap的时候，需要开辟额外的内存去绘制radius和mask。还有我说在使用系统提供的layer.shouldRaster之后导致图片会失真，变得模糊不清（也问了为什么会这样），然后采用了重新绘制image的方式。<br>谈到怎么去避免离屏渲染，尽量不要设置半透明的层叠视图，因为GPU需要组合这些layerTree，并且要额外的blending这些半透明的视图。</p>
-<p>####第五个，线程的安全应该怎么保证？<br>加锁，NSLock、NSRecursiveLock等，还有GCD的semaphore信号量机制之类的。</p>
-<p>####第六个，微信小程序的实现原理是啥？为什么要这么做？（估计是看看我没有关注这些事儿）<br>我说大概是在类似Html的基础上又封装实现了一套自己的东西，然后他去帮我们调用原生的东西。因为我当时参加的一线下活动里看到过，微信小程序可以在web页面里调试。</p>
+<h4 id="u7B2C_u4E94_u4E2A_uFF0C_u7EBF_u7A0B_u7684_u5B89_u5168_u5E94_u8BE5_u600E_u4E48_u4FDD_u8BC1_uFF1F"><a href="#u7B2C_u4E94_u4E2A_uFF0C_u7EBF_u7A0B_u7684_u5B89_u5168_u5E94_u8BE5_u600E_u4E48_u4FDD_u8BC1_uFF1F" class="headerlink" title="第五个，线程的安全应该怎么保证？"></a>第五个，线程的安全应该怎么保证？</h4><p>加锁，NSLock、NSRecursiveLock等，还有GCD的semaphore信号量机制之类的。</p>
+<h4 id="u7B2C_u516D_u4E2A_uFF0C_u5FAE_u4FE1_u5C0F_u7A0B_u5E8F_u7684_u5B9E_u73B0_u539F_u7406_u662F_u5565_uFF1F_u4E3A_u4EC0_u4E48_u8981_u8FD9_u4E48_u505A_uFF1F_uFF08_u4F30_u8BA1_u662F_u770B_u770B_u6211_u6CA1_u6709_u5173_u6CE8_u8FD9_u4E9B_u4E8B_u513F_uFF09"><a href="#u7B2C_u516D_u4E2A_uFF0C_u5FAE_u4FE1_u5C0F_u7A0B_u5E8F_u7684_u5B9E_u73B0_u539F_u7406_u662F_u5565_uFF1F_u4E3A_u4EC0_u4E48_u8981_u8FD9_u4E48_u505A_uFF1F_uFF08_u4F30_u8BA1_u662F_u770B_u770B_u6211_u6CA1_u6709_u5173_u6CE8_u8FD9_u4E9B_u4E8B_u513F_uFF09" class="headerlink" title="第六个，微信小程序的实现原理是啥？为什么要这么做？（估计是看看我没有关注这些事儿）"></a>第六个，微信小程序的实现原理是啥？为什么要这么做？（估计是看看我没有关注这些事儿）</h4><p>我说大概是在类似Html的基础上又封装实现了一套自己的东西，然后他去帮我们调用原生的东西。因为我当时参加的一线下活动里看到过，微信小程序可以在web页面里调试。</p>
 <p>至于为什么，我猜是为了维护自己的微信生态啥的，也更好的和微信本身交互</p>
-<p>####第七个，怎么去优化流量的的问题，或者电量的问题?<br>网络缓存，然后是缓存时效性问题。然后就是说道ETag来标志缓存是否要更新<br>电量的话，只能用intrument去分析app里那些地方占用的大量的内存，或者耗时的任务，动画之类的。</p>
-<p>####第八个，对MVVM怎么看？有啥缺点？<br>我说这个主要就是View层和Model层的双向绑定问题。RAC就是使双向绑定的事情变得更简单了。缺点的话，我说因为数据绑定可能会让bug更难调试吧，而且数据绑定也比较复杂，耗费内存。RAC的问题也是，出了问题比较难调试以及内存问题。</p>
-<p>####结尾<br>其实他们问的是多数都是大平台的APP里，通常都需要去解决的一些难点，以及你怎么去应对这些事。除了这些问题，还有一些零零散散的，比如微信的聊天记录表，要你去设计应该怎么去设计，微信的聊天应该怎么去实现啥的。今天也是明白了自己的差距在哪儿——视野太狭窄了。很多原理性的东西都需要去钻研，很多技术难点也需要去攻克。共勉吧！</p>
+<h4 id="u7B2C_u4E03_u4E2A_uFF0C_u600E_u4E48_u53BB_u4F18_u5316_u6D41_u91CF_u7684_u7684_u95EE_u9898_uFF0C_u6216_u8005_u7535_u91CF_u7684_u95EE_u9898_3F"><a href="#u7B2C_u4E03_u4E2A_uFF0C_u600E_u4E48_u53BB_u4F18_u5316_u6D41_u91CF_u7684_u7684_u95EE_u9898_uFF0C_u6216_u8005_u7535_u91CF_u7684_u95EE_u9898_3F" class="headerlink" title="第七个，怎么去优化流量的的问题，或者电量的问题?"></a>第七个，怎么去优化流量的的问题，或者电量的问题?</h4><p>网络缓存，然后是缓存时效性问题。然后就是说道ETag来标志缓存是否要更新<br>电量的话，只能用intrument去分析app里那些地方占用的大量的内存，或者耗时的任务，动画之类的。</p>
+<h4 id="u7B2C_u516B_u4E2A_uFF0C_u5BF9MVVM_u600E_u4E48_u770B_uFF1F_u6709_u5565_u7F3A_u70B9_uFF1F"><a href="#u7B2C_u516B_u4E2A_uFF0C_u5BF9MVVM_u600E_u4E48_u770B_uFF1F_u6709_u5565_u7F3A_u70B9_uFF1F" class="headerlink" title="第八个，对MVVM怎么看？有啥缺点？"></a>第八个，对MVVM怎么看？有啥缺点？</h4><p>我说这个主要就是View层和Model层的双向绑定问题。RAC就是使双向绑定的事情变得更简单了。缺点的话，我说因为数据绑定可能会让bug更难调试吧，而且数据绑定也比较复杂，耗费内存。RAC的问题也是，出了问题比较难调试以及内存问题。</p>
+<h4 id="u7ED3_u5C3E"><a href="#u7ED3_u5C3E" class="headerlink" title="结尾"></a>结尾</h4><p>其实他们问的是多数都是大平台的APP里，通常都需要去解决的一些难点，以及你怎么去应对这些事。除了这些问题，还有一些零零散散的，比如微信的聊天记录表，要你去设计应该怎么去设计，微信的聊天应该怎么去实现啥的。今天也是明白了自己的差距在哪儿——视野太狭窄了。很多原理性的东西都需要去钻研，很多技术难点也需要去攻克。共勉吧！</p>
 
       
     </div>
@@ -433,7 +429,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#u7B2C_u4E00_u4E2A_u662F_u57CB_u70B9_uFF0C_u9879_u76EE_u4E2D_u7684_u57CB_u70B9_u662F_u600E_u4E48_u8BBE_u8BA1_u5B9E_u73B0_uFF1F"><span class="nav-number">1.</span> <span class="nav-text">第一个是埋点，项目中的埋点是怎么设计实现？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#u7B2C_u4E8C_u4E2A_uFF0C_u5148_u662F_u95EE_u6211_u4EEC_u9879_u76EE_u4E2D_u7684_u6570_u636E_u6301_u4E45_u5C42_u90FD_u662F_u600E_u4E48_u505A_u7684_uFF1F_u7136_u540E_u6570_u636E_u5E93_u662F_u600E_u4E48_u4FDD_u8BC1_u4E8B_u52A1_u7684_u539F_u5B50_u6027_uFF1F_u5728commit_u4E4B_u524D_uFF0C_u90FD_u5728_u54EA_u513F_u5E72_u4E86_u4EC0_u4E48_u4E8B_u60C5_uFF1F_u591A_u7EBF_u7A0B_u8BBF_u95EE_u6570_u636E_u5E93_u600E_u4E48_u4FDD_u8BC1_u5B89_u5168_uFF1F"><span class="nav-number">2.</span> <span class="nav-text">第二个，先是问我们项目中的数据持久层都是怎么做的？然后数据库是怎么保证事务的原子性？在commit之前，都在哪儿干了什么事情？多线程访问数据库怎么保证安全？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#u7B2C_u4E09_u4E2A_uFF0C_Class_A__u7684_A_u65B9_u6CD5_u8981_u8C03_u7528_Class_B_u7684B_u65B9_u6CD5_uFF0CB_u8981_u8C03_u7528A_u7684_uFF0C_u600E_u4E48_u505A_u5230_u5B8C_u5168_u89E3_u8026_uFF1F"><span class="nav-number">3.</span> <span class="nav-text">第三个， Class A 的 A方法要调用 Class B的B方法，B要调用A的，怎么做到完全解耦？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#u7B2C_u56DB_u4E2A_uFF0C_CoreText_uFF0C_u5BCC_u6587_u672C_u7684_u5BFC_u81F4_u7684_u9875_u9762_u5361_u987F_u5E94_u8BE5_u5982_u4F55_u53BB_u89E3_u51B3_uFF1F_u8FD8_u6709_u79BB_u5C4F_u6E32_u67D3_u7684_u95EE_u9898_uFF1F"><span class="nav-number">4.</span> <span class="nav-text">第四个， CoreText，富文本的导致的页面卡顿应该如何去解决？还有离屏渲染的问题？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#u7B2C_u4E94_u4E2A_uFF0C_u7EBF_u7A0B_u7684_u5B89_u5168_u5E94_u8BE5_u600E_u4E48_u4FDD_u8BC1_uFF1F"><span class="nav-number">5.</span> <span class="nav-text">第五个，线程的安全应该怎么保证？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#u7B2C_u516D_u4E2A_uFF0C_u5FAE_u4FE1_u5C0F_u7A0B_u5E8F_u7684_u5B9E_u73B0_u539F_u7406_u662F_u5565_uFF1F_u4E3A_u4EC0_u4E48_u8981_u8FD9_u4E48_u505A_uFF1F_uFF08_u4F30_u8BA1_u662F_u770B_u770B_u6211_u6CA1_u6709_u5173_u6CE8_u8FD9_u4E9B_u4E8B_u513F_uFF09"><span class="nav-number">6.</span> <span class="nav-text">第六个，微信小程序的实现原理是啥？为什么要这么做？（估计是看看我没有关注这些事儿）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#u7B2C_u4E03_u4E2A_uFF0C_u600E_u4E48_u53BB_u4F18_u5316_u6D41_u91CF_u7684_u7684_u95EE_u9898_uFF0C_u6216_u8005_u7535_u91CF_u7684_u95EE_u9898_3F"><span class="nav-number">7.</span> <span class="nav-text">第七个，怎么去优化流量的的问题，或者电量的问题?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#u7B2C_u516B_u4E2A_uFF0C_u5BF9MVVM_u600E_u4E48_u770B_uFF1F_u6709_u5565_u7F3A_u70B9_uFF1F"><span class="nav-number">8.</span> <span class="nav-text">第八个，对MVVM怎么看？有啥缺点？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#u7ED3_u5C3E"><span class="nav-number">9.</span> <span class="nav-text">结尾</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
