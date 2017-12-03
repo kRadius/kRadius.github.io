@@ -75,7 +75,7 @@ Native 的 App 中只有一部分内容是 RN">
 <meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/RN%E6%8A%A5%E9%94%99.png">
 <meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/1512306803060-image.png">
 <meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/scrollView_js.png">
-<meta property="og:updated_time" content="2017-12-03T14:01:44.000Z">
+<meta property="og:updated_time" content="2017-12-03T14:11:43.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RN下拉刷新解决方案">
 <meta name="twitter:description" content="RN 的下拉刷新解决方案背景写过 RN 的同学都知道，RN 的下拉刷新是一个比较头疼的事儿。问题在于 RN 的 FlatList 用的是系统的 RefreshControl,很难自定义。所以想要做成和 Native 一样的可精细化控制的下拉刷新效果，确实得费一些心思。本文的背景：
@@ -286,7 +286,7 @@ Native 的 App 中只有一部分内容是 RN">
 <li>Xcode 9</li>
 <li>Native 的 App 中只有一部分内容是 RN </li>
 </ul>
-<h3 id="u6548_u679C"><a href="#u6548_u679C" class="headerlink" title="效果"></a>效果</h3><p>我们要实现的目标是：给 ListView、FlatList 都加上小团的下拉刷新效果，实现的效果如下：<br><img src="http://7xpoeq.com1.z0.glb.clouddn.com/2017-12-02%2021_45_23.gif" alt="MacDown Screenshot"></p>
+<h3 id="u6548_u679C"><a href="#u6548_u679C" class="headerlink" title="效果"></a>效果</h3><p>我们要实现的目标是：给 ListView、FlatList 都加上小团的下拉刷新效果，实现的效果如下：<br><span style="display:block;text-align:center"><img src="http://7xpoeq.com1.z0.glb.clouddn.com/2017-12-02%2021_45_23.gif" width="50%" style="display:inline"></span></p>
 <h3 id="u601D_u8DEF"><a href="#u601D_u8DEF" class="headerlink" title="思路"></a>思路</h3><p>写这文章的时候，我接触 ES、React、RN 时间不到一个月，所以限制我的想象力的是对于 JS 的熟练程度。本文是在 Native 端做的文章。</p>
 <p>先说下思路：我们发现，所有的 ScrollView、ListView、FlatList 最终现实在 Native 上都是一个 RCTScrollView，这虽然是一个自定义的 View，但暴露了一个 ReadOnly 的 ScrollView 属性，这也是一个自定义的 ScrollView。</p>
 <p><strong>实现的最主要思路就是给这个 ScrollView 加上 Native 的下拉刷新，然后暴露属性控制是否要用自定义的属性。</strong></p>
@@ -304,11 +304,11 @@ Native 的 App 中只有一部分内容是 RN">
 <p>Native 端的工作就到此。</p>
 <h4 id="JS__u7AEF"><a href="#JS__u7AEF" class="headerlink" title="JS 端"></a>JS 端</h4><p>JS 本身就是一个动态的语言，可以通过 protoType 在运行时给一个 object 添加属性和方法。所以我们可能想到，可以给 RN 的组件（JS 的组件，下文没有做特别说明都是指 JS 的）添加相关的属性，对应 Native 暴露的属性。</p>
 <p>不过很遗憾，RN 对于他自己提供的组件，会有一个严格的类型检查。<strong>如果 Native 暴露的属性，在 JS 端没有对应的属性声明，在 debug 环境下会抛出一个 Error。</strong></p>
-<p>这是 JS 端未做处理的情况：<br><img src="http://7xpoeq.com1.z0.glb.clouddn.com/RN%E6%8A%A5%E9%94%99.png" alt=""></p>
+<p>这是 JS 端未做处理的情况：<br><span style="display:block;text-align:center"><img src="http://7xpoeq.com1.z0.glb.clouddn.com/RN%E6%8A%A5%E9%94%99.png" width="50%" style="display:inline"></span></p>
 <p>查看源码我们发现，在验证失败的时候会抛出一个 Error。而且，这类型的检查发生在 require native component 的时候，这早于我们一般添加 protoType 的时机。</p>
-<p><img src="http://7xpoeq.com1.z0.glb.clouddn.com/1512306803060-image.png" alt="verifyPropType"></p>
+<p><span style="display:block;text-align:center"><img src="http://7xpoeq.com1.z0.glb.clouddn.com/1512306803060-image.png" width="50%" style="display:inline"></span></p>
 <p>这是 ScrollView.js 的调用：</p>
-<p><img src="http://7xpoeq.com1.z0.glb.clouddn.com/scrollView_js.png" alt=""></p>
+<p><span style="display:block;text-align:center"><img src="http://7xpoeq.com1.z0.glb.clouddn.com/scrollView_js.png" width="50%" style="display:inline"></span></p>
 <p>不过这个检查只会发生在 Debug 环境下，所以，此时我们有两种解决方案：</p>
 <ol>
 <li>给 ScrollView 加上这几个我们自定义的 props</li>
