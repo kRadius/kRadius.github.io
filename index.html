@@ -214,6 +214,150 @@
             
               
                 
+                <a class="post-title-link" href="/2017/12/03/RN下拉刷新解决方案/" itemprop="url">
+                  RN下拉刷新解决方案
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-12-03T21:58:21+08:00" content="2017-12-03">
+              2017-12-03
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/RN/" itemprop="url" rel="index">
+                    <span itemprop="name">RN</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="RN__u7684_u4E0B_u62C9_u5237_u65B0_u89E3_u51B3_u65B9_u6848"><a href="#RN__u7684_u4E0B_u62C9_u5237_u65B0_u89E3_u51B3_u65B9_u6848" class="headerlink" title="RN 的下拉刷新解决方案"></a>RN 的下拉刷新解决方案</h2><h3 id="u80CC_u666F"><a href="#u80CC_u666F" class="headerlink" title="背景"></a>背景</h3><p>写过 RN 的同学都知道，RN 的下拉刷新是一个比较头疼的事儿。问题在于 RN 的 FlatList 用的是系统的 RefreshControl,很难自定义。所以想要做成和 Native 一样的可精细化控制的下拉刷新效果，确实得费一些心思。本文的背景：</p>
+<ul>
+<li>RN 0.49 版本（FB 已经改了协议），</li>
+<li>Xcode 9</li>
+<li>Native 的 App 中只有一部分内容是 RN </li>
+</ul>
+<h3 id="u6548_u679C"><a href="#u6548_u679C" class="headerlink" title="效果"></a>效果</h3><p>我们要实现的目标是：给 ListView、FlatList 都加上小团的下拉刷新效果，实现的效果如下：<br><img src="http://7xpoeq.com1.z0.glb.clouddn.com/2017-12-02%2021_45_23.gif" alt="MacDown Screenshot"></p>
+<h3 id="u601D_u8DEF"><a href="#u601D_u8DEF" class="headerlink" title="思路"></a>思路</h3><p>写这文章的时候，我接触 ES、React、RN 时间不到一个月，所以限制我的想象力的是对于 JS 的熟练程度。本文是在 Native 端做的文章。</p>
+<p>先说下思路：我们发现，所有的 ScrollView、ListView、FlatList 最终现实在 Native 上都是一个 RCTScrollView，这虽然是一个自定义的 View，但暴露了一个 ReadOnly 的 ScrollView 属性，这也是一个自定义的 ScrollView。</p>
+<p><strong>实现的最主要思路就是给这个 ScrollView 加上 Native 的下拉刷新，然后暴露属性控制是否要用自定义的属性。</strong></p>
+<h3 id="u8981_u505A_u7684_u5DE5_u4F5C"><a href="#u8981_u505A_u7684_u5DE5_u4F5C" class="headerlink" title="要做的工作"></a>要做的工作</h3><p>要实现这个效果，需要准备一个可以给 ScrollView 加上的通用下拉刷新控件（Native 端的）。你可以自定义一个，或者用 SVPullRefresh、MJRefresh 啥的。对于源码，我们的原则是尽量不做修改，因为修改源码可能会因个人的实际情况有不用程度的问题。不过像笔者这种原先纯 Native 的 App，中途只有一部分改用 RN 的情况，还是建议保存一份 RN 的源码保存在私有仓库，因为肯定在某些场景下不能满足自身的需求。</p>
+<h4 id="Native__u7AEF"><a href="#Native__u7AEF" class="headerlink" title="Native 端"></a>Native 端</h4><p>代码方面我们只需要<strong>改一行 RN 的源码</strong>，不需要改 RN Native 端的代码。</p>
+<p>第一步要做的事情是给 <code>RCTScrollView</code> 和 <code>RCTScrollViewManager</code> 加上对应的 Category，用途是给 RCTScrollView 暴露新的属性以及控制自定义属性的行为。一般来说只要三个属性：</p>
+<ul>
+<li>enableCustomRefresh 控制是否需要显示自定义的下拉刷新</li>
+<li>isCustomRefreshing 控制下拉刷新的状态</li>
+<li>onCustomRefreshing 控制下拉刷新的回调</li>
+</ul>
+<p>我们知道 OC 可以通过 AssociateObject 给类添加 property，所以 Native 暴露的属性，JS 端通过 RN 调用的时候，都可以动态的找到对应的 setter/getter。这就是为啥我们前面说不用修改 RN Native 端源码的原因。最终实现的 Sample 代码：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// RCTScrollViewManager+SRNPullRefresh</span></span><br><span class="line"><span class="variable">@interface</span> RCTScrollViewManager (SRNPullRefresh)</span><br><span class="line"></span><br><span class="line"><span class="variable">@end</span></span><br><span class="line"></span><br><span class="line"><span class="variable">@implementation</span> RCTScrollViewManager (SRNPullRefresh)</span><br><span class="line"></span><br><span class="line"><span class="comment">// cumtom refresh</span></span><br><span class="line"><span class="function">RCT_EXPORT_VIEW_PROPERTY</span>(onSRNRefreshData, RCTDirectEventBlock)</span><br><span class="line"><span class="function">RCT_EXPORT_VIEW_PROPERTY</span>(enableSRNPullToRefresh, BOOL)</span><br><span class="line"><span class="function">RCT_EXPORT_VIEW_PROPERTY</span>(isSRNRefreshing, BOOL)</span><br><span class="line"></span><br><span class="line"><span class="variable">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//RCTScrollView+SRNPullRefresh.h</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">RCTScrollView</span> (<span class="title">SRNPullRefresh</span>)</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#pragma mark - CustomRefresh</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">BOOL</span> enableSRNPullToRefresh;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">BOOL</span> isSRNRefreshing;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) RCTDirectEventBlock onSRNRefreshData;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//RCTScrollView+SRNPullRefresh.m</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">RCTScrollView</span> (<span class="title">SRNPullRefresh</span>)</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#pragma mark - Property</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setIsSRNRefreshing:(<span class="built_in">BOOL</span>)isSRNRefreshing &#123;</span><br><span class="line">	<span class="comment">// 此处控制具体的刷新控件是否要开始刷新</span></span><br><span class="line">    objc_setAssociatedObject(<span class="keyword">self</span>, <span class="keyword">@selector</span>(isSRNRefreshing), @(isSRNRefreshing), OBJC_ASSO<span class="built_in">CIATION_RETAIN_NONATOMIC</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)isSRNRefreshing &#123;</span><br><span class="line">    <span class="keyword">return</span> [objc_getAssociatedObject(<span class="keyword">self</span>, <span class="keyword">@selector</span>(isSRNRefreshing)) boolValue];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setEnableSRNPullToRefresh:(<span class="built_in">BOOL</span>)enableSRNPullToRefresh &#123;</span><br><span class="line">	 <span class="comment">// 此处给 self.scrollView 加上对应的下拉刷新控件</span></span><br><span class="line">    objc_setAssociatedObject(<span class="keyword">self</span>, <span class="keyword">@selector</span>(enableSRNPullToRefresh), @(enableSRNPullToRefresh), OBJC_ASSO<span class="built_in">CIATION_RETAIN_NONATOMIC</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)enableSRNPullToRefresh &#123;</span><br><span class="line">    <span class="keyword">return</span> [objc_getAssociatedObject(<span class="keyword">self</span>, <span class="keyword">@selector</span>(enableSRNPullToRefresh)) boolValue];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setOnSRNRefreshData:(RCTDirectEventBlock)onSRNRefreshData &#123;</span><br><span class="line">	<span class="comment">// 此处应该调用暴露的 block 属性，让 JS 的刷新方法得到调用</span></span><br><span class="line">    objc_setAssociatedObject(<span class="keyword">self</span>, <span class="keyword">@selector</span>(onSRNRefreshData), onSRNRefreshData, OBJC_ASSO<span class="built_in">CIATION_COPY_NONATOMIC</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (RCTDirectEventBlock)onSRNRefreshData &#123;</span><br><span class="line">    <span class="keyword">return</span> objc_getAssociatedObject(<span class="keyword">self</span>, <span class="keyword">@selector</span>(onSRNRefreshData));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Native 端的工作就到此。</p>
+<h4 id="JS__u7AEF"><a href="#JS__u7AEF" class="headerlink" title="JS 端"></a>JS 端</h4><p>JS 本身就是一个动态的语言，可以通过 protoType 在运行时给一个 object 添加属性和方法。所以我们可能想到，可以给 RN 的组件（JS 的组件，下文没有做特别说明都是指 JS 的）添加相关的属性，对应 Native 暴露的属性。</p>
+<p>不过很遗憾，RN 对于他自己提供的组件，会有一个严格的类型检查。<strong>如果 Native 暴露的属性，在 JS 端没有对应的属性声明，在 debug 环境下会抛出一个 Error。</strong></p>
+<p>这是 JS 端未做处理的情况：<br><img src="http://7xpoeq.com1.z0.glb.clouddn.com/RN%E6%8A%A5%E9%94%99.png" alt=""></p>
+<p>查看源码我们发现，在验证失败的时候会抛出一个 Error。而且，这类型的检查发生在 require native component 的时候，这早于我们一般添加 protoType 的时机。</p>
+<p><img src="http://7xpoeq.com1.z0.glb.clouddn.com/1512306803060-image.png" alt="verifyPropType"></p>
+<p>这是 ScrollView.js 的调用：</p>
+<p><img src="http://7xpoeq.com1.z0.glb.clouddn.com/scrollView_js.png" alt=""></p>
+<p>不过这个检查只会发生在 Debug 环境下，所以，此时我们有两种解决方案：</p>
+<ol>
+<li>给 ScrollView 加上这几个我们自定义的 props</li>
+<li>把这个 <code>throw new Error(message)</code> 给注释掉或者改成 <code>console.warn(message)</code>。</li>
+</ol>
+<p>我们推荐第二种方式，第一、肯定不能丢失 Debug 的功能。第二、以后可能还有又类似的功能，这样做不需要每次都去改相关的组件代码。</p>
+<p>做完了这些，你在用到了 FlatList、ListView 之类的 ScrollView 时，只需要给组件加上相关的属性，即可以实现我们开头所讲的那个效果了。</p>
+<h3 id="u601D_u8003"><a href="#u601D_u8003" class="headerlink" title="思考"></a>思考</h3><p>后来和一个朋友沟通的时候，他提出了一个方案：可以 hook requireNativeComponent 方法，判断参数是不是 <code>RCTScrollView</code>，然后加上相应的 nativeOnly 参数。这个想法其实挺不错的，又可以不改动源码。不过我们当时因为时间的压力，采用我之前那种成本较小的做法，有时间的话可以尝试着 hook 一下。<br>Have Fun XD ～</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/12/07/支付宝iOS面试/" itemprop="url">
                   支付宝iOS面试
                 </a>
@@ -911,7 +1055,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-count">6</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -919,7 +1063,7 @@
           
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -928,7 +1072,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -966,7 +1110,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
