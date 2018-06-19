@@ -1,0 +1,837 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS,汇编," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="知识点通过本文你能:
+
+了解 iOS 下函数调用的一些知识
+了解一些调试的技巧
+了解 performSelector:withObject 的返回值问题
+了解一些汇编知识
+
+背景写这文章缘起于在一次写业务的过程中发现了一个有意思的事情。我想要获取performSelector:withObject:的返回值，然后突然意识到，如果这个selector 是个没有返回值的方法，会出现什么结果？请花 1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS Function Call Convention">
+<meta property="og:url" content="http://yoursite.com/2018/06/19/iOS-Function-Call-Convention/index.html">
+<meta property="og:site_name" content="StoryBoard">
+<meta property="og:description" content="知识点通过本文你能:
+
+了解 iOS 下函数调用的一些知识
+了解一些调试的技巧
+了解 performSelector:withObject 的返回值问题
+了解一些汇编知识
+
+背景写这文章缘起于在一次写业务的过程中发现了一个有意思的事情。我想要获取performSelector:withObject:的返回值，然后突然意识到，如果这个selector 是个没有返回值的方法，会出现什么结果？请花 1">
+<meta property="og:image" content="https://developer.apple.com/library/archive/documentation/Xcode/Conceptual/iPhoneOSABIReference/art/arm_stack.jpg">
+<meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/assembly.jpg">
+<meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/register.png">
+<meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/x_value.png">
+<meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/test_assembly.jpg">
+<meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/multi_param_1.png">
+<meta property="og:image" content="http://7xpoeq.com1.z0.glb.clouddn.com/exc_bad_access.png">
+<meta property="og:updated_time" content="2018-06-19T15:37:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS Function Call Convention">
+<meta name="twitter:description" content="知识点通过本文你能:
+
+了解 iOS 下函数调用的一些知识
+了解一些调试的技巧
+了解 performSelector:withObject 的返回值问题
+了解一些汇编知识
+
+背景写这文章缘起于在一次写业务的过程中发现了一个有意思的事情。我想要获取performSelector:withObject:的返回值，然后突然意识到，如果这个selector 是个没有返回值的方法，会出现什么结果？请花 1">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> iOS Function Call Convention | StoryBoard </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">StoryBoard</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">iOS | github | hexo</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                iOS Function Call Convention
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2018-06-19T23:12:08+08:00" content="2018-06-19">
+              2018-06-19
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="u77E5_u8BC6_u70B9"><a href="#u77E5_u8BC6_u70B9" class="headerlink" title="知识点"></a>知识点</h3><p>通过本文你能:</p>
+<ul>
+<li>了解 iOS 下函数调用的一些知识</li>
+<li>了解一些调试的技巧</li>
+<li>了解 performSelector:withObject 的返回值问题</li>
+<li>了解一些汇编知识</li>
+</ul>
+<h3 id="u80CC_u666F"><a href="#u80CC_u666F" class="headerlink" title="背景"></a>背景</h3><p>写这文章缘起于在一次写业务的过程中发现了一个有意思的事情。我想要获取<code>performSelector:withObject:</code>的返回值，然后突然意识到，如果这个<code>selector</code> 是个没有返回值的方法，会出现什么结果？请花 1 秒思考一下 returnValue 的值是多少？还是会 crash？</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@implentmatoin ViewController</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)test &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">	SEL sel = <span class="keyword">@selector</span>(test);</span><br><span class="line">	<span class="keyword">id</span> returnValue = [<span class="keyword">self</span> performSelector:sel withObject:<span class="literal">nil</span>];</span><br><span class="line">	<span class="built_in">NSLog</span>(<span class="string">@"returnValue = %@"</span>,returnValue);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>1s 过去了，公布答案。最终的输出是：ViewController 的地址。这个问题有意思的地方在于：<code>performSelector:withObject</code> 是一个有返回值的方法，我们用它去执行一个没有返回值的函数，那么返回的结果是什么？我当时对这个结果有着深深的疑惑。各种谷歌都没有找到我想要的答案，然后自己翻书查文档，最终找出了合适的解释。</p>
+<p>我得出的结论是：</p>
+<blockquote>
+<p>由于 <code>objc_msgSend</code> 是一个有返回值的方法，在调用它的时候，需要分配一个寄存器（rax）用于存储返回值。但最终执行的 <code>-(void)test</code> 是没有返回值的，所以在真正执行 <code>test</code> 时没有用<code>rax</code>这个寄存器。结果 <code>rax</code> 依然是最初始的值，这个值正好就是 <code>self</code> 的地址。</p>
+<p><strong>不过，这个 self 仅仅是当前运行的测试代码的结果，并不是 perform 任何没有返回值的方法，都是返回 self。</strong></p>
+</blockquote>
+<p>需要注意的是：这篇文章是基于模拟器的运行结果，也就是 x86-64 的 CPU 架构。这个和 ARM 架构虽然在一些地方不同，但是函数调用的流程上是一致的。</p>
+<h3 id="u63ED_u5F00_u9762_u7EB1"><a href="#u63ED_u5F00_u9762_u7EB1" class="headerlink" title="揭开面纱"></a>揭开面纱</h3><p>我们知道所有的 OC 发送的消息，最后都会根据返回值的不同，转成相应的 <code>objc_msgSend</code> 方法。此处我们调用的<code>performSelector:withObject</code>则会转换成返回 <code>id</code> 类型的 <code>objc_msgSend</code>。所以此处其实是调用了一个正常 C 方法。</p>
+<blockquote>
+<p>Note: 随便提一下，只有返回值是一个对象的方法，才能使用 <code>perfomSelector:withObject</code>。因为 <code>perform</code> 会直接转化成 <code>objc_msgSend</code>。如果此时的 selector 返回值是一个结构体，那么就会在运行期间 crash，因为返回结构体的方法应该调用 <code>objc_msgSend_stret</code>。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="keyword">struct</span> student &#123;</span><br><span class="line">	<span class="built_in">NSInteger</span> age;</span><br><span class="line">	<span class="built_in">BOOL</span> gender;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> student Student;</span><br><span class="line">&gt; - (Student)returnStruct &#123;</span><br><span class="line">	Student student = &#123;</span><br><span class="line">		<span class="variable">.gender</span> = <span class="literal">YES</span>,</span><br><span class="line">		<span class="variable">.age</span> = <span class="number">10</span></span><br><span class="line">	&#125;;</span><br><span class="line">	<span class="keyword">return</span> student;</span><br><span class="line">&#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+<p>如果 perform <code>returnStruct</code> 则会 crash；文档里也写了：</p>
+<blockquote>
+<p>For methods that return anything other than an object, use NSInvocation.<br>具体可以参考 <em><a href="https://www.tomdalling.com/blog/cocoa/why-performselector-is-more-dangerous-than-i-thought/" target="_blank" rel="external">https://www.tomdalling.com/blog/cocoa/why-performselector-is-more-dangerous-than-i-thought/</a></em></p>
+</blockquote>
+</blockquote>
+<h3 id="CPU__u7684_u57FA_u672C_u64CD_u4F5C"><a href="#CPU__u7684_u57FA_u672C_u64CD_u4F5C" class="headerlink" title="CPU 的基本操作"></a>CPU 的基本操作</h3><p>要想明白函数的完整调用过程，我们首先需要了解一下 CPU 能够操作的指令。CPU 的操作指令分成了下面 4 个大类：</p>
+<ul>
+<li>数据转送指令：寄存器和内存、内存和内存、寄存器和外围设备之间的数据读写操作（mov, push, pop, lea）</li>
+<li>运算指令：算数运算、逻辑运算、比较运算和位移运算(add, inc/dec)</li>
+<li>跳转指令：实现条件分支、循环、强制跳转等(jmp)</li>
+<li>call/return: 函数的调用/返回调用前的地址</li>
+</ul>
+<p>了解了 CPU 指令的基本大类之后，我们还需要记住几个很常见的指令：</p>
+<ul>
+<li><code>mov src, dst</code> 该指令会把源操作数（src）传送至目的操作数（dst）。</li>
+<li><code>push src</code> 入栈</li>
+<li><code>lea src, reg</code> 将源操作数的有效地址传送到寄存器</li>
+<li><code>sub value, reg</code> 为 reg 预留 value 个字节的空间</li>
+</ul>
+<blockquote>
+<p>注意，有些架构下的指令是从后往前赋值的，本文的指令是从前往后赋值</p>
+</blockquote>
+<p>着重介绍一下 <code>mov</code> 操作，他有几种寻址方式：</p>
+<ul>
+<li><p>寄存器寻址：<code>movq %rsp, %rbp -&gt; rbp = rsp</code></p>
+</li>
+<li><p>立即数寻址：<code>movq $0x30, %rdi -&gt; rdi = 0x30</code>    </p>
+</li>
+<li><p>直接寻址：<code>movq 0x30, %rdx -&gt; rdx = *0x30</code>    </p>
+</li>
+<li><p>间接寻址：<code>movq (%rbx), %rdx -&gt; rdx = *(rbx)</code>    </p>
+</li>
+<li><p>变址寻址：<code>movq -0x8(%rbp), %rsi -&gt; rsi = *(rbp - 0x8)</code></p>
+</li>
+</ul>
+<p>再来看下<code>通用寄存器</code>，x84-64 有 16 个 64 位的寄存器，分别是：<br><code>%rax，%rbx，%rcx，%rdx，%esi，%edi，%rbp，%rsp</code><br><code>%r8，%r9，%r10，%r11，%r12，%r13，%r14，%r15。</code></p>
+<p>其中：</p>
+<p><code>%rax</code> 作为函数返回值使用。</p>
+<p><code>%rsp</code> 栈指针寄存器，指向栈顶</p>
+<p>%rdi，%rsi，%rdx，%rcx，%r8，%r9 用作函数参数，依次对应第1参数，第2参数。。。</p>
+<p>%rbx，%rbp，%r12，%r13，%14，%15 用作数据存储，遵循<strong><code>被调用者(callee)</code></strong>使用规则，简单说就是随便用，调用子函数之前要备份它，以防他被修改。</p>
+<p>%r10，%r11 用作数据存储，遵循<a name="fenced-code-block"><strong><code>调用者(caller)</code></strong></a>使用规则，简单说就是使用之前要先保存原值。</p>
+<blockquote>
+<p>这是 rax、eax、ax、ah al 的关系。主要是长度的不同。还有 ax = ah + al。ah（high） 代表 ax 的高 8 位，al（low）代表 ax 的底 8 位。ah 和 al 可以独立使用，以灵活存储不同大小的数据。</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">|<span class="string">63..32</span>|<span class="string">31..16</span>|<span class="string">15-8</span>|<span class="string">7-0</span>|</span><br><span class="line">               |<span class="string">AH.</span>|<span class="string">AL.</span>|</span><br><span class="line">               |<span class="string">AX.....</span>|</span><br><span class="line">       |<span class="string">EAX............</span>|</span><br><span class="line">|<span class="string">RAX...................</span>|</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="u51FD_u6570_u7684_u8C03_u7528_u8FC7_u7A0B"><a href="#u51FD_u6570_u7684_u8C03_u7528_u8FC7_u7A0B" class="headerlink" title="函数的调用过程"></a>函数的调用过程</h3><p>操作系统是通过前面提到的 <code>call/return</code> 这一对指令来完成函数的调用的。简单来说，调用一个函数需要保存当前执行的状态，包括入参、调用完函数之后继续执行的地址以及一些寄存器的值和调用者的堆栈地址。</p>
+<p>这是 ArmV6 下函数的调用约定（ArmV7 基本的流程没有变化）：</p>
+<p><img src="https://developer.apple.com/library/archive/documentation/Xcode/Conceptual/iPhoneOSABIReference/art/arm_stack.jpg" alt="arm_stack"></p>
+<p><code>栈帧是函数调用时候在栈上产生的活动记录</code>。一般我们认为从 <code>%rbp ~ %rsp</code> 之间的区域当成栈帧。栈是从高地址往低地址生长的（想象成一个石钟乳）。栈帧包含以下区域：</p>
+<ul>
+<li>参数区存储调用者传递给被调用函数的参数或存储它们的空间，具体取决于每个参数的类型和寄存器的可用性。这个区域驻留在调用者的堆栈帧中。</li>
+<li>链接区域包含调用者下一条指令的地址(rdi)。</li>
+<li>保存的帧指针（可选）包含调用者的堆栈帧的基地址(old stack frame)。</li>
+<li>在本地存储区域包含子程序的局部变量和必须调用的函数返回前恢复寄存器的值。</li>
+</ul>
+<blockquote>
+<p><a href="https://developer.apple.com/library/archive/documentation/Xcode/Conceptual/iPhoneOSABIReference/Articles/ARMv6FunctionCallingConventions.html#//apple_ref/doc/uid/TP40009021-SW1" target="_blank" rel="external">https://developer.apple.com/library/archive/documentation/Xcode/Conceptual/iPhoneOSABIReference/Articles/ARMv6FunctionCallingConventions.html#//apple_ref/doc/uid/TP40009021-SW1</a></p>
+</blockquote>
+<p>这是我们文章开头提到的问题的汇编代码（此时指令已经执行到了 <code>NSLog</code> 这一行）：</p>
+<p><img src="http://7xpoeq.com1.z0.glb.clouddn.com/assembly.jpg" alt="assembly"></p>
+<p>再来看一下这个时候的寄存器上的值(<code>register read</code> 或者在控制台左侧面板显示所有的变量类型)：</p>
+<p><img src="http://7xpoeq.com1.z0.glb.clouddn.com/register.png" alt="register"></p>
+<p>箭头指向的是当前执行的指令，我们看到<code>第24行</code> <code>0x1062cc5e1 &lt;+97&gt;:  movq   %rax, -0x28(%rbp)</code>就是给 <code>returnValue 变量</code> 赋值的指令。<br><code>0x28</code> 表示的是十进制是 <code>40</code>，64 位下，一个变量占 8 字节，也就是此处正好是第 5 个局部变量 <code>returnValue</code>。那么前四个是什么呢？</p>
+<p>我们可以通过 lldb 的命令 <code>x</code> ，来查看内存中的值是什么。</p>
+<blockquote>
+<p>简单说一下 <code>x/&lt;n/f/u&gt;</code>,这其实是 <code>gdb</code> 的调试指令,不过在 <code>lldb</code>里对他进行了兼容，文末给出 lldb 的 guide。 <code>n</code> 是正整数，表示需要显示的内存单元的个数，即从当前地址向后显示n个内存单元的内容，一个内存单元的大小由第三个参数 u 定义。<br><code>f</code> 是要显示的格式<br><code>u</code> 是指以多少个字节作为一个内存单元-unit,默认为4。当然u还可以用被一些字符表示，如b=1 byte, h=2 bytes,w=4 bytes,g=8 bytes.<br><a href="https://blog.csdn.net/renlonggg/article/details/73550306" target="_blank" rel="external">https://blog.csdn.net/renlonggg/article/details/73550306</a></p>
+</blockquote>
+<p>我们前面提到，内存中的栈是从高地址像低地址生长的(<code>0xffffffff-&gt;0xffffff8</code>)。<code>x</code> 查询的是当前内存地址之后的连续增长内存，也就是比当前地址大。所以要查看前几个局部变量，我们首先要看下当前的<code>栈帧</code>分配了多少空间用来存储局部变量。</p>
+<p>看到开头的第 4 行指令，<code>subq $0x30, $rsp</code>, 这句指令的意思就是在栈上开辟了 <code>0x30 -&gt; 40 个字节 -&gt; 6 个变量的空间</code>，然后移动 <code>rsp</code>。我们可以看到上面寄存器的图中，这也意味着当前函数的栈帧只需要这么大的空间。<code>rbp</code> 和 <code>rsp</code> 正好是差 <code>0x30</code> 个字节。在函数退出的时候，则会执行相反的 <code>addq 0x30</code>操作。</p>
+<p>然后我们只需要执行 <code>x/6ag 0x00007ffee9930990</code>，就能看到当前的栈上，局部变量的值都是那些。<code>a</code> 表示按十六进制格式显示变量，<code>g</code> 表示 以 <code>8</code> 字节为单位。</p>
+<p>以下为结果：</p>
+<p><img src="http://7xpoeq.com1.z0.glb.clouddn.com/x_value.png" alt="x_value"></p>
+<p>我们可以看到，最靠近 <code>rsp</code> —- 栈帧底部的是 <code>ViewController</code>，接着是 <code>&quot;viewDidLoad&quot;</code> 这个字符串。看到这里有没有觉得一丝熟悉的感觉？其实就是 <code>objc_msgSend</code> 的前两个参数,<code>self</code> 和 <code>_cmd</code>。然后就是为调用 <code>[super viewDidLoad]</code> 和 <code>performSelector:withObject</code> 准备的局部变量。第 <code>5</code> 个就是我们声明的用来接收返回值的局部变量<code>returnValue</code>，正好是 <code>viewContorller</code> 自身的地址。最后一个应该是给 <code>NSLog</code> 准备的参数。</p>
+<p>再来看一下 <code>test</code> 方法里发生了什么：</p>
+<p><img src="http://7xpoeq.com1.z0.glb.clouddn.com/test_assembly.jpg" alt="test_assembly"></p>
+<p>这就是一个标准的函数调用流程。先保存之前的函数的栈地址，就是经常提到的<code>old esp</code> ，然后把 <code>rsp</code> 的地址赋值给 <code>rbp</code>,意味着新的栈帧底部。接着开辟空间，存储传递过来的参数，我们可以看到是通过<code>rdi 和 rsi</code> 这两个寄存器传值的，传递的是什么大家心里也有数了。至于这儿为啥没有 <code>sub</code> 指令，可能是发现是空函数，编译器直接给优化了。随便打印点什么，就会发现指令大为不同。 我们可以看到这里并没有使用 <code>rax</code> 这个寄存器。</p>
+<p>通过分析这个问题，总结了一个小经验，在调用 <code>call</code> 指令之前，基本都是一系列的 <code>mov</code> 操作，其实就是给要调用的方法准备参数。这里就会遵循之前提到的 <a href="/#fenced-code-block">调用者规则/被调用者</a>，调用者/被调用者在使用某个寄存器前需要保存它原先的值。另外还有就是，前四个参数会通过寄存器传递，超过了四个的参数则通过栈传递。我们来验证一下：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Foo *foo = [Foo <span class="keyword">new</span>];</span><br><span class="line">[foo <span class="string">a:</span>@<span class="string">"a"</span> <span class="string">b:</span>@<span class="string">"b"</span> <span class="string">c:</span>@<span class="string">"c"</span> <span class="string">d:</span>@<span class="string">"d"</span> <span class="string">e:</span>@<span class="string">"e"</span> <span class="string">f:</span>@<span class="string">"f"</span> <span class="string">g:</span>@<span class="string">"g"</span> <span class="string">h:</span>@<span class="string">"h"</span> <span class="string">i:</span>@<span class="string">"i"</span>];</span><br></pre></td></tr></table></figure>
+<p>这是他的汇编指令：<br><img src="http://7xpoeq.com1.z0.glb.clouddn.com/multi_param_1.png" alt="multi_param_1"></p>
+<p>这是一个比较完整的函数调用例子了。保存寄存器（两个原则）、参数通过栈/寄存器传递，以及各个寄存器的使用规则。</p>
+<p>最后提一下文章开头说的注意事项，并不是 <code>performSelector:withObject</code> 一个无返回值的方法，都是返回 <code>self</code>。 <strong>这取决于当时寄存器的使用情况，甚至还会出现 Crash</strong>。我们把给开头的 <code>test</code> 方法加上一个 <code>NSString</code> 类型的参数：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="typename">void</span>)viewDidLoad &#123;</span><br><span class="line">	[<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">	id returnValue = [self <span class="string">performSelector:</span><span class="annotation">@selector</span>(<span class="string">test:</span>) <span class="string">withObject:</span>@<span class="string">"1"</span>];</span><br><span class="line">	NSLog(@<span class="string">"returnValue = %@"</span>, returnValue);</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="typename">void</span>)<span class="string">test:</span>(NSString *)string &#123;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个时候就出现了非法的内存访问，应该是在访问 <code>ris+0x1ad7</code> 的时候出现了错误。</p>
+<p><img src="http://7xpoeq.com1.z0.glb.clouddn.com/exc_bad_access.png" alt="exc_bad_access"></p>
+<p>但是如果你把参数的类型改成 <code>NSNumber</code> 则返回的是 <code>nil</code>，这个有兴趣自行验证。提示一个调试的方法，可以在通过在具体的指令行数加上断点，然后执行，在转成汇编，就能断到指定的汇编行数。</p>
+<p>通过上述的分析，我们可以推断出，<strong>最好不要轻易 动态的 去获取 perfomrSelector:withObject的返回值</strong>。一个是返回值不是对象的问题，另一个是如果执行的是一个无返回值的方法，可能会出现 Crash。</p>
+<p>Have fun～</p>
+<h3 id="u94FE_u63A5"><a href="#u94FE_u63A5" class="headerlink" title="链接"></a>链接</h3><ul>
+<li><a href="https://developer.apple.com/library/archive/documentation/Xcode/Conceptual/iPhoneOSABIReference/Articles/ARMv6FunctionCallingConventions.html#//apple_ref/doc/uid/TP40009021-SW1" target="_blank" rel="external">ARMv6 Function Calling Conventions</a></li>
+<li><a href="https://lldb.llvm.org/lldb-gdb.html" target="_blank" rel="external">lldb 调试指令</a></li>
+<li><a href="https://blog.csdn.net/u013982161/article/details/51347944" target="_blank" rel="external">X86-64寄存器和栈帧</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">
+            -------------本文结束
+            <i class="fa fa-paw"></i>
+            玩的开心-------------
+        </div>
+    
+</div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"><i class="fa fa-tag"></i>iOS</a>
+          
+            <a href="/tags/汇编/" rel="tag"><i class="fa fa-tag"></i>汇编</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/03/RN下拉刷新解决方案/" rel="next" title="RN下拉刷新解决方案">
+                <i class="fa fa-chevron-left"></i> RN下拉刷新解决方案
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://7xpoeq.com1.z0.glb.clouddn.com/WechatIMG1.jpeg"
+               alt="Radius" />
+          <p class="site-author-name" itemprop="name">Radius</p>
+          <p class="site-description motion-element" itemprop="description">夫博观而约取，厚积而薄发</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+          
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#u77E5_u8BC6_u70B9"><span class="nav-number">1.</span> <span class="nav-text">知识点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#u80CC_u666F"><span class="nav-number">2.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#u63ED_u5F00_u9762_u7EB1"><span class="nav-number">3.</span> <span class="nav-text">揭开面纱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU__u7684_u57FA_u672C_u64CD_u4F5C"><span class="nav-number">4.</span> <span class="nav-text">CPU 的基本操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#u51FD_u6570_u7684_u8C03_u7528_u8FC7_u7A0B"><span class="nav-number">5.</span> <span class="nav-text">函数的调用过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#u94FE_u63A5"><span class="nav-number">6.</span> <span class="nav-text">链接</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Radius</span>
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i>
+<span id="busuanzi_container_site_uv">
+  Visitor Number:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.scheme !== 'Pisces' && (CONFIG.sidebar.display === 'post' || CONFIG.sidebar.display === 'always')) {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+  
+
+
+</body>
+</html>
