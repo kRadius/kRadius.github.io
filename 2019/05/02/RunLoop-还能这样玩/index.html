@@ -1,0 +1,706 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="RunLoop," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="RunLoop 还能这样玩？最近给一个没有单测的项目添加测试用例，可谓真的是痛不欲生。期间学习了一些 OCMock + Expect 框架，也踩了不少的坑。（有一本书叫做《修改代码的艺术》，讲的就是如何给既有的项目添加测试）。
+遇到有一个比较有意思的问题是：如果有一个预期调用的一个方法是异步的，如何编写写测试预期？例如：有一个业务类 foo，执行某种操作 bar，由于该方法没有返回值，或者对全局的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RunLoop 还能这样玩?">
+<meta property="og:url" content="http://yoursite.com/2019/05/02/RunLoop-还能这样玩/index.html">
+<meta property="og:site_name" content="StoryBoard">
+<meta property="og:description" content="RunLoop 还能这样玩？最近给一个没有单测的项目添加测试用例，可谓真的是痛不欲生。期间学习了一些 OCMock + Expect 框架，也踩了不少的坑。（有一本书叫做《修改代码的艺术》，讲的就是如何给既有的项目添加测试）。
+遇到有一个比较有意思的问题是：如果有一个预期调用的一个方法是异步的，如何编写写测试预期？例如：有一个业务类 foo，执行某种操作 bar，由于该方法没有返回值，或者对全局的">
+<meta property="og:image" content="https://cdn.sinaimg.cn.52ecy.cn/large/005BYqpgly1g2ndbcai57j31060mu7bh.jpg">
+<meta property="og:updated_time" content="2019-05-02T15:03:30.342Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RunLoop 还能这样玩?">
+<meta name="twitter:description" content="RunLoop 还能这样玩？最近给一个没有单测的项目添加测试用例，可谓真的是痛不欲生。期间学习了一些 OCMock + Expect 框架，也踩了不少的坑。（有一本书叫做《修改代码的艺术》，讲的就是如何给既有的项目添加测试）。
+遇到有一个比较有意思的问题是：如果有一个预期调用的一个方法是异步的，如何编写写测试预期？例如：有一个业务类 foo，执行某种操作 bar，由于该方法没有返回值，或者对全局的">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> RunLoop 还能这样玩? | StoryBoard </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">StoryBoard</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">iOS | github | hexo</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                RunLoop 还能这样玩?
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-05-02T22:53:38+08:00" content="2019-05-02">
+              2019-05-02
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="RunLoop__u8FD8_u80FD_u8FD9_u6837_u73A9_uFF1F"><a href="#RunLoop__u8FD8_u80FD_u8FD9_u6837_u73A9_uFF1F" class="headerlink" title="RunLoop 还能这样玩？"></a>RunLoop 还能这样玩？</h3><p>最近给一个没有单测的项目添加测试用例，可谓真的是痛不欲生。期间学习了一些 OCMock + Expect 框架，也踩了不少的坑。（有一本书叫做《修改代码的艺术》，讲的就是如何给既有的项目添加测试）。</p>
+<p>遇到有一个比较有意思的问题是：如果有一个预期调用的一个方法是异步的，如何编写写测试预期？例如：有一个业务类 <code>foo</code>，执行某种操作 <code>bar</code>，由于该方法没有返回值，或者对全局的状态进行更改，但是知道他会在主线程调用另外一个预期的方法 <code>baz</code>。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// test.m</span></span><br><span class="line">describe(@<span class="string">"foo"</span>, ^&#123;</span><br><span class="line">	it(@<span class="string">"test async"</span>, ^&#123;</span><br><span class="line">		id foo = OCMStrictClassMock([Foo <span class="class"><span class="keyword">class</span>]);</span></span><br><span class="line"></span><br><span class="line">		OCMExpect([foo baz]);</span><br><span class="line">		<span class="comment">// foo 在 bar 方法里 异步调用了 baz 方法</span></span><br><span class="line">		[foo bar]</span><br><span class="line">		OCMVerifyAll(foo);</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>如下是 <code>foo</code> 类的 <code>bar</code> 方法：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// foo.m</span></span><br><span class="line"></span><br><span class="line"><span class="tag">-</span> (void)<span class="tag">bar</span> &#123;</span><br><span class="line">	<span class="tag">dispatch_aysnc</span>(<span class="function">dispatch_get_main_queue</span>(), ^&#123;</span><br><span class="line">		<span class="attr_selector">[self baz]</span>;</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果是按照上面的写法，是一直都无法成功的。原因是<code>测试的代码都是同步执行的，不会等到 async 里的 block 执行</code>。</p>
+<h3 id="u89E3_u51B3_u529E_u6CD5"><a href="#u89E3_u51B3_u529E_u6CD5" class="headerlink" title="解决办法"></a>解决办法</h3><p>由于这种情况下，我们无法更改被测试的代码，但是还是希望能够 <code>expect</code> 这个方法被调用。解决的方案是：<code>让主线程等待一会儿</code>。</p>
+<p>示例代码：</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// <span class="atom">test</span>.<span class="atom">m</span></span><br><span class="line"><span class="atom">describe</span>(@<span class="string">"foo"</span>, ^&#123;</span><br><span class="line">	<span class="atom">it</span>(@<span class="string">"test async"</span>, ^&#123;</span><br><span class="line">		<span class="atom">id</span> <span class="atom">foo</span> = <span class="name">OCMStrictClassMock</span>([<span class="name">Foo</span> <span class="atom">class</span>]);</span><br><span class="line"></span><br><span class="line">		<span class="name">OCMExpect</span>([<span class="atom">foo</span> <span class="atom">baz</span>]);</span><br><span class="line">		// <span class="atom">foo</span> 在 <span class="atom">bar</span> 方法里 异步调用了 <span class="atom">baz</span> 方法</span><br><span class="line">		[<span class="atom">foo</span> <span class="atom">bar</span>]</span><br><span class="line">		[[<span class="name">NSRunLoop</span> <span class="atom">currentRunLoop</span>] <span class="atom">runUntilDate</span>:[<span class="name">NSDate</span> <span class="atom">dateWithTimeIntervalSinceNow</span>:<span class="number">0.01</span>]];</span><br><span class="line">		<span class="name">OCMVerifyAll</span>(<span class="atom">foo</span>);</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>这样，在执行 <code>verfify</code> 之前，会调用 <code>dispatch_aysnc 到主线程的 block -- baz</code>。</p>
+<h3 id="u4E3A_u4F55_u4F1A_u8FD9_u6837-_u731C_u60F3"><a href="#u4E3A_u4F55_u4F1A_u8FD9_u6837-_u731C_u60F3" class="headerlink" title="为何会这样-猜想"></a>为何会这样-猜想</h3><p>很明显，关键在于 <code>[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];</code>。</p>
+<p>这个方法是什么意思呢？如下是苹果官方文档的解释</p>
+<blockquote>
+<p>Runs the loop until the specified date, during which time it processes data from all attached input sources.</p>
+<p>If no input sources or timers are attached to the run loop, this method exits immediately; otherwise, it runs the receiver in the NSDefaultRunLoopMode by repeatedly invoking runMode:beforeDate: until the specified expiration date. Manually removing all known input sources and timers from the run loop is not a guarantee that the run loop will exit. macOS can install and remove additional input sources as needed to process requests targeted at the receiver’s thread. Those sources could therefore prevent the run loop from exiting</p>
+<p>运行 RunLoop直到指定的时间，在此期间它处理来自所有（当前RunLoop）附属输入源的数据。</p>
+<p>如果没有输入源或定时器附加到运行循环，则此方法立即退出;否则，它通过反复调用runMode：beforeDate：直到指定的到期日期来运行NSDefaultRunLoopMode中的接收器。 从运行循环中手动删除所有已知输入源和计时器并不能保证运行循环将退出。 macOS可以根据需要安装和删除其他输入源，以处理针对接收者线程的请求。因此，这些来源可以防止运行循环退出。</p>
+</blockquote>
+<p>主线程是由于默认的 port，是能够一直运行的。那在主线程里再次运行此方法，其实就相当于在一个 do-while 循环了，又同步的运行了一次 do-while 循环，而这个循环就是 runLoop 本身的逻辑，也能够处理各种事件，也就是 InputSources（Port、CustomPort，performSelector等）、TimerSource[1]。当前方法内 <code>runUntilDate</code> 之后的代码也就被阻塞了，示意代码如下：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__<span class="built_in">CFRunLoopRun</span>() &#123;</span><br><span class="line">	<span class="keyword">do</span> &#123;</span><br><span class="line">		<span class="comment">// runUntilDate: 大概是这么个意思</span></span><br><span class="line">		__<span class="built_in">CFRunLoopRun</span>();</span><br><span class="line">	&#125; <span class="keyword">while</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而上面的 <code>dispatch_async(dispatch_get_main_queue(), block)</code> 方法，最终会由 <code>libdispatch</code> 向主线程的 RunLoop 发送消息，正好由 <code>runUntilDate:</code> 启动的新的循环给处理了（见[1]）。</p>
+<h3 id="u6709_u8DA3_u7684_u5B9E_u9A8C_u4EE5_u53CA_u9A8C_u8BC1"><a href="#u6709_u8DA3_u7684_u5B9E_u9A8C_u4EE5_u53CA_u9A8C_u8BC1" class="headerlink" title="有趣的实验以及验证"></a>有趣的实验以及验证</h3><p>有个问题：当在主线程运行了 <code>runUntilDate:</code>，主线程被<code>卡住了</code>，那还能响应UI事件（如点击屏幕）吗？还能响应 Timer吗？答案是可以的。因为一个是 mach_port 发过来的中断事件（input source），一个是 Timer Source。</p>
+<p>我写了如下的测试代码，并且在 <code>viewDidLoad:</code> 里添加了对 RunLoop 状态的监听，以验证我们上文的猜想。实验代码如下：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">    [<span class="keyword">self</span> addObserver];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)addObserver &#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">CFRunLoopObserverRef</span> observer = <span class="built_in">CFRunLoopObserverCreateWithHandler</span>(k<span class="built_in">CFAllocatorDefault</span>, k<span class="built_in">CFRunLoopAllActivities</span>, <span class="literal">YES</span>, <span class="number">0</span>, ^(<span class="built_in">CFRunLoopObserverRef</span> observer, <span class="built_in">CFRunLoopActivity</span> activity) &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">/*</span><br><span class="line">         kCFRunLoopEntry = (1UL &lt;&lt; 0),          进入工作</span><br><span class="line">         kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1),   即将处理Timers事件</span><br><span class="line">         kCFRunLoopBeforeSources = (1UL &lt;&lt; 2),  即将处理Source事件</span><br><span class="line">         kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5),  即将休眠</span><br><span class="line">         kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6),   被唤醒</span><br><span class="line">         kCFRunLoopExit = (1UL &lt;&lt; 7),           退出RunLoop</span><br><span class="line">         kCFRunLoopAllActivities = 0x0FFFFFFFU  监听所有事件</span><br><span class="line">         */</span></span><br><span class="line">        <span class="keyword">switch</span> (activity) &#123;</span><br><span class="line">            <span class="keyword">case</span> k<span class="built_in">CFRunLoopEntry</span>:</span><br><span class="line">                <span class="built_in">NSLog</span>(<span class="string">@"进入 %p"</span>, observer);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> k<span class="built_in">CFRunLoopBeforeTimers</span>:</span><br><span class="line">                <span class="built_in">NSLog</span>(<span class="string">@"即将处理Timer事件"</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> k<span class="built_in">CFRunLoopBeforeSources</span>:</span><br><span class="line">                <span class="built_in">NSLog</span>(<span class="string">@"即将处理Source事件"</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> k<span class="built_in">CFRunLoopBeforeWaiting</span>:</span><br><span class="line">                <span class="built_in">NSLog</span>(<span class="string">@"即将休眠"</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> k<span class="built_in">CFRunLoopAfterWaiting</span>:</span><br><span class="line">                <span class="built_in">NSLog</span>(<span class="string">@"被唤醒"</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> k<span class="built_in">CFRunLoopExit</span>:</span><br><span class="line">                <span class="built_in">NSLog</span>(<span class="string">@"退出RunLoop %p"</span>, observer);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">CFRunLoopAddObserver</span>(<span class="built_in">CFRunLoopGetCurrent</span>(), observer, k<span class="built_in">CFRunLoopDefaultMode</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">IBAction</span>)clickAction1:(<span class="keyword">id</span>)sender &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"button1 click"</span>);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"foo"</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"先执行的这个"</span>);</span><br><span class="line">    [[<span class="built_in">NSRunLoop</span> currentRunLoop] runUntilDate:[<span class="built_in">NSDate</span> dateWithTimeIntervalSinceNow:<span class="number">5</span>]];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"bar"</span>);</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="keyword">IBAction</span>)clickAction2:(<span class="keyword">id</span>)sender &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"click2"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>当我们点击第一个按钮执行 <code>clickAction1</code> 时，观察到如下的 RunLoop 状态：<br><img src="https://cdn.sinaimg.cn.52ecy.cn/large/005BYqpgly1g2ndbcai57j31060mu7bh.jpg" alt="RunLoopState"></p>
+<p>可以看到有两次的的 enter/leave 触发。因为 <code>run</code> 和 <code>runUntilDate:</code> 方法会使用 <code>NSDefaultRunLoopMode</code> 参数不断调用 <code>runMode:beforeDate:</code> 方法。上面的例子中正好对应两个事件处理，一个 <code>dispatch_async</code>触发，一个 <code>NSLog</code>。并且在没有事件的时候，陷入等待状态，不会一直调用 <code>runMode:beforeDate:</code>。</p>
+<p>关于问题： <code>那还能响应UI事件（如点击屏幕）吗？还能响应 Timer吗？</code> ，有兴趣可以自行验证，其实也很简单。Have Fun ：D</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">
+            -------------本文结束
+            <i class="fa fa-paw"></i>
+            玩的开心-------------
+        </div>
+    
+</div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/RunLoop/" rel="tag"><i class="fa fa-tag"></i>RunLoop</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/19/iOS-Function-Call-Convention/" rel="next" title="iOS Function Call Convention">
+                <i class="fa fa-chevron-left"></i> iOS Function Call Convention
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://7xpoeq.com1.z0.glb.clouddn.com/WechatIMG1.jpeg"
+               alt="Radius" />
+          <p class="site-author-name" itemprop="name">Radius</p>
+          <p class="site-description motion-element" itemprop="description">夫博观而约取，厚积而薄发</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+          
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#RunLoop__u8FD8_u80FD_u8FD9_u6837_u73A9_uFF1F"><span class="nav-number">1.</span> <span class="nav-text">RunLoop 还能这样玩？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#u89E3_u51B3_u529E_u6CD5"><span class="nav-number">2.</span> <span class="nav-text">解决办法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#u4E3A_u4F55_u4F1A_u8FD9_u6837-_u731C_u60F3"><span class="nav-number">3.</span> <span class="nav-text">为何会这样-猜想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#u6709_u8DA3_u7684_u5B9E_u9A8C_u4EE5_u53CA_u9A8C_u8BC1"><span class="nav-number">4.</span> <span class="nav-text">有趣的实验以及验证</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Radius</span>
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i>
+<span id="busuanzi_container_site_uv">
+  Visitor Number:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.scheme !== 'Pisces' && (CONFIG.sidebar.display === 'post' || CONFIG.sidebar.display === 'always')) {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+  
+
+
+</body>
+</html>
